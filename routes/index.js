@@ -14,7 +14,9 @@ router.get('/', function(req, res, next) {
 
 
 
-router.get('/nature',async function(req, res, next) {
+router.post('/nature',async function(req, res, next) {
+
+  console.log(req.body)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
@@ -50,12 +52,23 @@ if (distance>999){
 
 
 // Liste de tous les sports disponibles
-router.get('/sportlist',async function(req, res, next) {
+router.post('/sportlist',async function(req, res, next) {
+
+  console.log("recup requete",req.body)
+
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
+ /* let latitude = 48.866667
   let longitude = 2.333333
   let distance = 10000
+*/
+
+
+  let latitude = req.body.lat
+  let longitude = req.body.long
+  let distance = 1000
+
+
 
   // Liste des activités hors licence etc ...
 
@@ -96,14 +109,11 @@ result.map ((item,i)=>{
 
   let lettre =item.name.split("",1)
 
-  for (let i = 0 ; i<uniqList.length; i++){
-   // console.log("lettre de ",item.name,"===",lettre," <=====>",uniqList[i] )
-    
+  for (let i = 0 ; i<uniqList.length; i++){    
     if (lettre== uniqList[i]){
-     console.log("resultat trouvé",item.name,"===",lettre," <=====>",uniqList[i] )
-
+     //console.log("resultat trouvé",item.name,"===",lettre," <=====>",uniqList[i] )
     }else {
-    // console.log('nada')
+
     }
   }
 
@@ -155,7 +165,7 @@ router.get('/adressesList',async function(req, res, next) {
 });
 
 
-//recherche des adresses
+//recherche des adresses via lat & long
 router.post('/adressesList',async function(req, res, next) {
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
