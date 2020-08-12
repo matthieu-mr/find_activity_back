@@ -75,6 +75,8 @@ router.post('/sportlist',async function(req, res, next) {
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
   var response = JSON.parse(list.getBody())
   var result = response.facet_groups[1].facets
+  var resultat =response.facet_groups[1]
+
 
 //Tri de la list
 result.sort(function(a,b){
@@ -95,8 +97,7 @@ let mefListFirstLetter = result.map ((item,i)=>{
   nLettre =`lettre[0]`
   //mefList=mefList+{nLettre}
  mefList.push(lettre[0])
- 
-
+ item.first_letter = lettre[0]
 })
 
 
@@ -111,7 +112,8 @@ result.map ((item,i)=>{
 
   for (let i = 0 ; i<uniqList.length; i++){    
     if (lettre== uniqList[i]){
-     //console.log("resultat trouvé",item.name,"===",lettre," <=====>",uniqList[i] )
+     console.log("resultat trouvé",item.name,"===",lettre," <=====>",uniqList[i] )
+     
     }else {
 
     }
@@ -119,7 +121,8 @@ result.map ((item,i)=>{
 
 })
 
-res.json({result,uniqList});
+
+res.json({result,resultat});
 });
 
 
@@ -255,13 +258,11 @@ https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Museum%2
   var placeId = response.candidates[0].place_id
 
   //https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,formatted_phone_number&key=YOUR_API_KEY
-
+// get place details 
   var detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
-  var responseDetail = JSON.parse(detailRaw.getBody())
-
-
-
-  console.log(response)
+  var responseDetailRaw = JSON.parse(detailRaw.getBody())
+  var responseDetail=responseDetailRaw.result
+  
   res.json({responseDetail});
 });
 
