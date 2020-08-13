@@ -199,15 +199,13 @@ router.post('/listpoint',async function(req, res, next) {
   // Liste des activités hors licence etc ...
 
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&rows=100&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-
-
   var response = JSON.parse(list.getBody())
 
   var result = response.records
-
+var resultSend = result
 
   console.log(result)
-  res.json({result});
+  res.json({resultSend});
 });
 
 
