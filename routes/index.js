@@ -13,7 +13,7 @@ router.get('/', function(req, res, next) {
 });
 
 
-
+// Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
 
   console.log(req.body)
@@ -28,24 +28,26 @@ router.post('/nature',async function(req, res, next) {
   // Liste des activités hors licence etc ...
 
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=100&facet=naturelibelle&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-  
-  
-  
   var response = JSON.parse(list.getBody())
   var result = response.facet_groups[1]
   
+  let resultFiltered =result.facets
+let total = 0
+ 
 
-  let nbActivityMap = result.facets.map ((item,i)=>{
-    nbActivity += item.count
-  })
+ let mefListFirstLetter = resultFiltered.map ((item,i)=>{
+  console.log(item.name)
+  item.state=true
+  total = total + item.count
+})
 
 
 if (distance>999){
   calcDistAround = distance / 1000;
   distAround = calcDistAround + " Km"
 }
+res.json({resultFiltered,total});
 
-  res.json({result,nbActivity:nbActivity,distAround:distAround});
 });
 
 
@@ -67,8 +69,6 @@ router.post('/sportlist',async function(req, res, next) {
   //let latitude = req.body.lat
   //let longitude = req.body.long
   //let distance = 1000
-
-
 
   // Liste des activités hors licence etc ...
 
@@ -99,28 +99,6 @@ let mefListFirstLetter = result.map ((item,i)=>{
  mefList.push(lettre[0])
  item.first_letter = lettre[0]
 })
-
-
-// supression des doublons
-const uniqList =[...new Set(mefList)]
-
-const allList =''
-
-result.map ((item,i)=>{
-
-  let lettre =item.name.split("",1)
-
-  for (let i = 0 ; i<uniqList.length; i++){    
-    if (lettre== uniqList[i]){
-     console.log("resultat trouvé",item.name,"===",lettre," <=====>",uniqList[i] )
-     
-    }else {
-
-    }
-  }
-
-})
-
 
 res.json({result,resultat});
 });
@@ -202,14 +180,43 @@ router.post('/listpoint',async function(req, res, next) {
   var response = JSON.parse(list.getBody())
 
   var result = response.records
-var resultSend = result
 
-  console.log(result)
-  res.json({resultSend});
+  res.json({result});
 });
 
 
+//filtrage par type d'activite
 
+router.post('/filteredType',async function(req, res, next) {
+
+//  console.log("recup requete",req.body)
+  //Un point WGS84 et une distance en mètres pour le géopositionnement
+  let latitude = 48.866667
+  let longitude = 2.333333
+  let distance = 10000
+// let natureActivite = encodeURI("Intérieur");
+
+//  let latitude = req.body.lat
+ // let longitude = req.body.long
+ // let distance = 1000
+   let natureRaw = req.body.type
+  let natureJoin = natureRaw.replace(/ /g, "+")
+  let natureActivite = encodeURI(natureJoin);
+
+
+  console.log("mon encodage",natureActivite,'leur encodage ----  Site+naturel+am%C3%A9nag%C3%A9')
+
+  // Liste des activités hors licence etc ...
+
+  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&&geofilter.distance=${latitude}%2C${longitude}%2C${distance}&refine.naturelibelle=${natureActivite}`)
+
+  
+  var response = JSON.parse(list.getBody())
+  var result = response.records
+  console.log(response)
+
+res.json({result});
+});
 
 //recuperation des informations de google place
 router.post('/pointinformation',async function(req, res, next) {
@@ -263,15 +270,6 @@ https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Museum%2
   
   res.json({responseDetail});
 });
-
-
-
-
-
-
-
-
-
 
 
 module.exports = router;
