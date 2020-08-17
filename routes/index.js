@@ -199,7 +199,7 @@ router.post('/filteredType',async function(req, res, next) {
 //  let latitude = req.body.lat
  // let longitude = req.body.long
  // let distance = 1000
-   let natureRaw = req.body.type
+  let natureRaw = req.body.type
   let natureJoin = natureRaw.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
 
@@ -221,45 +221,19 @@ res.json({result});
 //recuperation des informations de google place
 router.post('/pointinformation',async function(req, res, next) {
 
+  console.log("recup info",req.body.lat)
+
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.86701
-  let longitude = 2.35399
-  let distance = 1000000
-  let name ="petanque"
-
-/*
-
-https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Museum%20of%20Contemporary%20Art%20Australia&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo
-  &key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo
-
-
-                      "actnivlib": "Loisir - Entretien - Remise en forme",
-                    "equipementtypelib": "Terrain de pétanque",
-                    "dist": "1511.44144296",
-                    "insnovoie": "93 BIS",
-                    "utilisation": "Récréation sportive",
-                    "insarrondissement": 75103,
-                    "actcode": 6001,
-                    "famille": "Boulodrome",
-                    "naturelibelle": "Découvert",
-                    "equnbequidentique": 1,
-                    "deplib": "Paris",
-                    "insnom": "Square Emile Chautemps",
-                    "depcode": 75,
-                    "gps": [
-                        48.86701,
-                        2.35399
-                    ],
-
-*/
-
+  let latitude = req.body.lat
+  let longitude = req.body.lon
+  //let distance = 1000000
+  let name =req.body.name
 
 
   // Liste des activités hors licence etc ...
 
   var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${name}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   var response = JSON.parse(listRaw.getBody())
-
   var placeId = response.candidates[0].place_id
 
   //https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,formatted_phone_number&key=YOUR_API_KEY
