@@ -16,8 +16,6 @@ router.get('/', function(req, res, next) {
 // Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
 
-  console.log(req.body)
-
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
   let longitude = 2.333333
@@ -36,7 +34,6 @@ let total = 0
  
 
  let mefListFirstLetter = resultFiltered.map ((item,i)=>{
-  console.log(item.name)
   item.state=true
   total = total + item.count
 })
@@ -55,9 +52,6 @@ res.json({resultFiltered,total});
 
 // Liste de tous les sports disponibles
 router.post('/sportlist',async function(req, res, next) {
-
-  console.log("recup requete",req.body)
-
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
@@ -107,22 +101,26 @@ res.json({result,resultat});
 // Rechgerche par sport
 router.post('/sport',async function(req, res, next) {
 
+  console.log("req.body", req.body)
+
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
   let longitude = 2.333333
   let distance = 10000
-  let sport = 'Boulodrome'
+  let sport = req.body.sport
+
+  let sportJoin = sport.replace(/ /g, "+")
+  let sportActivite = encodeURI(sportJoin);
+
   // Liste des activités hors licence etc ...
 
-  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=100&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.famille=${sport}&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-
-
+  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=${sportActivite}&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
+  //https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=Tennis&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=48.866667%2C2.3333%2C10000
+  
   var response = JSON.parse(list.getBody())
 
-  var result = response
-
-
-  console.log(result)
+  var result = response.records
+console.log("result",result)
   res.json({result});
 });
 
@@ -140,8 +138,6 @@ router.get('/adressesList',async function(req, res, next) {
 
   var result = response
 
-
-  console.log(result)
   res.json({result});
 });
 
@@ -159,9 +155,6 @@ router.post('/adressesListCoord',async function(req, res, next) {
   var response = JSON.parse(list.getBody())
 
   var result = response
-
-
-  console.log(result)
   res.json({result});
 });
 
@@ -189,7 +182,6 @@ router.post('/listpoint',async function(req, res, next) {
 
 router.post('/filteredType',async function(req, res, next) {
 
-//  console.log("recup requete",req.body)
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
   let longitude = 2.333333
@@ -203,9 +195,6 @@ router.post('/filteredType',async function(req, res, next) {
   let natureJoin = natureRaw.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
 
-
-  console.log("mon encodage",natureActivite,'leur encodage ----  Site+naturel+am%C3%A9nag%C3%A9')
-
   // Liste des activités hors licence etc ...
 
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&&geofilter.distance=${latitude}%2C${longitude}%2C${distance}&refine.naturelibelle=${natureActivite}`)
@@ -213,15 +202,12 @@ router.post('/filteredType',async function(req, res, next) {
   
   var response = JSON.parse(list.getBody())
   var result = response.records
-  console.log(response)
 
 res.json({result});
 });
 
 //recuperation des informations de google place
 router.post('/pointinformation',async function(req, res, next) {
-
-  console.log("recup info",req.body.lat)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = req.body.lat
