@@ -120,7 +120,6 @@ router.post('/sport',async function(req, res, next) {
   var response = JSON.parse(list.getBody())
 
   var result = response.records
-console.log("result",result)
   res.json({result});
 });
 
