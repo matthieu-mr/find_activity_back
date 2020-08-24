@@ -107,7 +107,9 @@ router.post('/sport',async function(req, res, next) {
   let latitude = 48.866667
   let longitude = 2.333333
   let distance = 10000
-  let sport = req.body.sport
+  //let sport = req.body.sport
+
+  let sport = "Aquagym"
 
   let sportJoin = sport.replace(/ /g, "+")
   let sportActivite = encodeURI(sportJoin);
