@@ -101,15 +101,15 @@ res.json({result,resultat});
 // Rechgerche par sport
 router.post('/sport',async function(req, res, next) {
 
-  console.log("req.body", req.body)
+  console.log("req.body de sport", req.body)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
   let longitude = 2.333333
   let distance = 10000
-  //let sport = req.body.sport
+  let sport = req.body.sport
 
-  let sport = "Aquagym"
+  //let sport = "Aquagym"
 
   let sportJoin = sport.replace(/ /g, "+")
   let sportActivite = encodeURI(sportJoin);
@@ -133,7 +133,6 @@ router.get('/adressesList',async function(req, res, next) {
   let adress = "8 bd du port"
 
   // Liste des activités hors licence etc ...
-
   var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adress}`)
   var response = JSON.parse(list.getBody())
 
