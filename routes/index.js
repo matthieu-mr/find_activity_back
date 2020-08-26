@@ -127,17 +127,21 @@ router.post('/sport',async function(req, res, next) {
 
 
 //recherche des adresses
-router.get('/adressesList',async function(req, res, next) {
-
+router.post('/adressesList',async function(req, res, next) {
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let adress = "8 bd du port"
+  let adress =req.body.adress
+
+  let adressModif = adress.replace(/ /g, '+');
+
+
+  console.log(adressModif)
 
   // Liste des activités hors licence etc ...
-  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adress}`)
+  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=3`)
   var response = JSON.parse(list.getBody())
 
-  var result = response
-
+  var result = response.features
+  console.log(result[0])
   res.json({result});
 });
 
@@ -145,8 +149,7 @@ router.get('/adressesList',async function(req, res, next) {
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
 
-
-console.log(req.body)
+console.log("adress coords",req.body)
 
 let lonCon = req.body.long
 let latCon = req.body.lat
@@ -165,7 +168,7 @@ console.log("test",latCon)
 
   var result = response.features[0].properties
 
-  console.log(result)
+  console.log("retour",result)
 
 
  let name = response.features[0].properties.name
