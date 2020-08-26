@@ -145,17 +145,37 @@ router.get('/adressesList',async function(req, res, next) {
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
 
+
+console.log(req.body)
+
+let lonCon = req.body.long
+let latCon = req.body.lat
+
+console.log("test",lonCon)
+console.log("test",latCon)
+
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let lon = 2.37
-  let lat = 48.357
+  let lon = encodeURI(lonCon)
+  let lat = encodeURI(latCon)
 
   // Liste des activités hors licence etc ...
 
   var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`)
   var response = JSON.parse(list.getBody())
 
-  var result = response
-  res.json({result});
+  var result = response.features[0].properties
+
+  console.log(result)
+
+
+ let name = response.features[0].properties.name
+let postCode = response.features[0].properties.postcode
+let city =response.features[0].properties.city
+
+
+let adress = name + ','+ postCode + ','+city
+
+  res.json({adress});
 });
 
 
