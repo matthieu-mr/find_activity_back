@@ -130,18 +130,13 @@ router.post('/sport',async function(req, res, next) {
 router.post('/adressesList',async function(req, res, next) {
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let adress =req.body.adress
-
   let adressModif = adress.replace(/ /g, '+');
 
-
-  console.log(adressModif)
-
   // Liste des activités hors licence etc ...
-  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=3`)
+  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=15`)
   var response = JSON.parse(list.getBody())
 
   var result = response.features
-  console.log(result[0])
   res.json({result});
 });
 
@@ -158,17 +153,20 @@ console.log("test",lonCon)
 console.log("test",latCon)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
+  /*
   let lon = encodeURI(lonCon)
   let lat = encodeURI(latCon)
+  */
 
   // Liste des activités hors licence etc ...
 
-  var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`)
+  var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lonCon}&lat=${latCon}`)
   var response = JSON.parse(list.getBody())
 
-  var result = response.features[0].properties
 
-  console.log("retour",result)
+//  var result = response.features[0].properties
+
+  console.log("retour",response.features)
 
 
  let name = response.features[0].properties.name
