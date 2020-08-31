@@ -16,6 +16,8 @@ router.get('/', function(req, res, next) {
 // Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
 
+  console.log("req body nature",req.body )
+
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = 48.866667
   let longitude = 2.333333
@@ -144,13 +146,9 @@ router.post('/adressesList',async function(req, res, next) {
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
 
-console.log("adress coords",req.body)
-
 let lonCon = req.body.long
 let latCon = req.body.lat
 
-console.log("test",lonCon)
-console.log("test",latCon)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   /*
@@ -183,10 +181,13 @@ let adress = name + ','+ postCode + ','+city
 //recuperation des points map
 router.post('/listpoint',async function(req, res, next) {
 
+  console.log('list point ', req.body)
+
+
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
-  let longitude = 2.333333
-  let distance = 1000000
+  let latitude = req.body.lat
+  let longitude = req.body.long
+  let distance = req.body.dist
 
   // Liste des activités hors licence etc ...
 
@@ -202,11 +203,11 @@ router.post('/listpoint',async function(req, res, next) {
 //filtrage par type d'activite
 
 router.post('/filteredType',async function(req, res, next) {
-
+console.log("recup des filter", req.body)
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
-  let longitude = 2.333333
-  let distance = 10000
+  let latitude = req.body.lat
+  let longitude = req.body.lon
+  let distance = req.body.dist
 // let natureActivite = encodeURI("Intérieur");
 
 //  let latitude = req.body.lat
@@ -241,15 +242,27 @@ router.post('/pointinformation',async function(req, res, next) {
 
   var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${name}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   var response = JSON.parse(listRaw.getBody())
-  var placeId = response.candidates[0].place_id
 
-  //https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJN1t_tDeuEmsRUsoyG83frY4&fields=name,rating,formatted_phone_number&key=YOUR_API_KEY
-// get place details 
-  var detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
-  var responseDetailRaw = JSON.parse(detailRaw.getBody())
-  var responseDetail=responseDetailRaw.result
+let placeId
+let responseDetail = undefined
+let existe = false
+
+if (response.candidates[0] == undefined){
   
-  res.json({responseDetail});
+}else {
+  existe = true
+
+  placeId = response.candidates[0].place_id
+  let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+  let responseDetailRaw = JSON.parse(detailRaw.getBody())
+  responseDetail=responseDetailRaw.result
+}
+
+
+// get place details 
+
+
+  res.json({existe,response,responseDetail});
 });
 
 
