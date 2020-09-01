@@ -12,27 +12,28 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+// 48.7926622, 2.5134926,5000
+
 
 // Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
-
-  console.log("req body nature",req.body )
-
+  console.log("req.body",req.body)
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
-  let longitude = 2.333333
-  let distance = 100000
+  let latitude = req.body.lat
+  let longitude = req.body.long
+  let distance = req.body.dist
   let nbActivity = 0 ;
   let distAround = distance + " metres";
 
   // Liste des activités hors licence etc ...
-
+  
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=100&facet=naturelibelle&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
   var response = JSON.parse(list.getBody())
   var result = response.facet_groups[1]
   
   let resultFiltered =result.facets
-let total = 0
+  let total = 0
+
  
 
  let mefListFirstLetter = resultFiltered.map ((item,i)=>{
@@ -45,6 +46,8 @@ if (distance>999){
   calcDistAround = distance / 1000;
   distAround = calcDistAround + " Km"
 }
+
+
 res.json({resultFiltered,total});
 
 });
@@ -56,15 +59,10 @@ res.json({resultFiltered,total});
 router.post('/sportlist',async function(req, res, next) {
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
-  let longitude = 2.333333
-  let distance = 10000
+  let latitude = req.body.lat
+  let longitude = req.body.long
+  let distance = req.body.dist
 
-
-
-  //let latitude = req.body.lat
-  //let longitude = req.body.long
-  //let distance = 1000
 
   // Liste des activités hors licence etc ...
 
@@ -85,16 +83,6 @@ result.sort(function(a,b){
       return 1;
 });
 
-// recuperation premieres lettres
-let mefList = []
-
-let mefListFirstLetter = result.map ((item,i)=>{
-  lettre =item.name.split("",1)
-  nLettre =`lettre[0]`
-  //mefList=mefList+{nLettre}
- mefList.push(lettre[0])
- item.first_letter = lettre[0]
-})
 
 res.json({result,resultat});
 });
@@ -103,12 +91,11 @@ res.json({result,resultat});
 // Rechgerche par sport
 router.post('/sport',async function(req, res, next) {
 
-  console.log("req.body de sport", req.body)
 
-  //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = 48.866667
-  let longitude = 2.333333
-  let distance = 10000
+   //Un point WGS84 et une distance en mètres pour le géopositionnement
+  let latitude = req.body.lat
+  let longitude = req.body.lon
+  let distance = req.body.dist
   let sport = req.body.sport
 
   //let sport = "Aquagym"
@@ -119,11 +106,9 @@ router.post('/sport',async function(req, res, next) {
   // Liste des activités hors licence etc ...
 
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=${sportActivite}&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-  //https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=Tennis&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=48.866667%2C2.3333%2C10000
-  
-  var response = JSON.parse(list.getBody())
-
-  var result = response.records
+    
+    var response = JSON.parse(list.getBody())
+    var result = response.records
   res.json({result});
 });
 
@@ -162,17 +147,10 @@ let latCon = req.body.lat
   var response = JSON.parse(list.getBody())
 
 
-//  var result = response.features[0].properties
-
-  console.log("retour",response.features)
-
-
- let name = response.features[0].properties.name
-let postCode = response.features[0].properties.postcode
-let city =response.features[0].properties.city
-
-
-let adress = name + ','+ postCode + ','+city
+  let name = response.features[0].properties.name
+  let postCode = response.features[0].properties.postcode
+  let city =response.features[0].properties.city
+  let adress = name + ','+ postCode + ','+city
 
   res.json({adress});
 });
@@ -180,9 +158,6 @@ let adress = name + ','+ postCode + ','+city
 
 //recuperation des points map
 router.post('/listpoint',async function(req, res, next) {
-
-  console.log('list point ', req.body)
-
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = req.body.lat
@@ -203,26 +178,22 @@ router.post('/listpoint',async function(req, res, next) {
 //filtrage par type d'activite
 
 router.post('/filteredType',async function(req, res, next) {
-console.log("recup des filter", req.body)
-  //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = req.body.lat
-  let longitude = req.body.lon
-  let distance = req.body.dist
-// let natureActivite = encodeURI("Intérieur");
 
-//  let latitude = req.body.lat
- // let longitude = req.body.long
- // let distance = 1000
+  //Un point WGS84 et une distance en mètres pour le géopositionnement
+  let lat = req.body.lat
+  let long = req.body.long
+  let dist = req.body.dist
+
   let natureRaw = req.body.type
   let natureJoin = natureRaw.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
 
   // Liste des activités hors licence etc ...
 
-  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&&geofilter.distance=${latitude}%2C${longitude}%2C${distance}&refine.naturelibelle=${natureActivite}`)
-
+  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.naturelibelle=${natureActivite}&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${lat}%2C+${long}%2C${dist}`)
   
   var response = JSON.parse(list.getBody())
+
   var result = response.records
 
 res.json({result});
