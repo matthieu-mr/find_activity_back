@@ -15,6 +15,13 @@ router.get('/', function(req, res, next) {
 // 48.7926622, 2.5134926,5000
 
 
+router.get('/test', function(req, res, next) {
+
+  res.render('index', { title: 'test' });
+});
+
+
+
 // Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
   console.log("req.body",req.body)
