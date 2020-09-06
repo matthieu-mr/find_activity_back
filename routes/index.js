@@ -9,7 +9,7 @@ var request = require('sync-request');
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'hello' });
 });
 
 // 48.7926622, 2.5134926,5000
