@@ -219,20 +219,24 @@ router.post('/listpoint',async function(req, res, next) {
   let longitude = req.body.long
   let distance = req.body.dist
 
+  console.log("req.body")
 
-  latitude = 48.7927087
-  longitude = 2.5133559
-  distance = 1000
-
-
+/*
+  lat = 48.7927087
+lon = 2.5133559
+dist = 1000
+*/
 
   // Liste des activités hors licence etc ...
 
   var list = request('GET', ` https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
   
-   
+ 
+  
   var response = JSON.parse(list.getBody())
-  var result = response.records
+   var result = response.records
+
+
 
   res.json({result});
 });
