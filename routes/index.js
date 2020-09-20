@@ -19,7 +19,6 @@ router.get('/', function(req, res, next) {
 // Type d'activite (onterieur etc ....)
 router.post('/nature',async function(req, res, next) {
   //Un point WGS84 et une distance en mètres pour le géopositionnement
-console.log("nature",req.body)
   let lat = req.body.lat
   let lon = req.body.long
   let dist = req.body.dist
@@ -113,14 +112,38 @@ router.post('/sportlist',async function(req, res, next) {
   let latitude = req.body.lat
   let longitude = req.body.long
   let distance = req.body.dist
+  let typeActivity = req.body.type
+/*
+  
+  latitude = 48.7926622
+  longitude =  2.5134926
+   distance = 1000
+   sport = "Tennis"
+   typeActivity = "Toutes"
+*/
+  console.log("sportlist", req.body)
+
+  let natureJoin = typeActivity.replace(/ /g, "+")
+  let natureActivite = encodeURI(natureJoin);
+  let result 
+  let resultat
+
+  if (typeActivity == "Toutes" || typeActivity=="undefined" ){
+    console.log("toutes / undifined")
+    var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
+    var response = JSON.parse(list.getBody())
+     result = response.records
+     resultat =response.facet_groups[1].facets
+  
+  }else {
+    console.log("Autres")
+    var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.naturelibelle=${natureActivite}&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
+    var response = JSON.parse(list.getBody())
+     result = response.facet_groups[1].facets
+     resultat =response.facet_groups[1]
+  }
 
 
-  // Liste des activités hors licence etc ...
-
-  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-  var response = JSON.parse(list.getBody())
-  var result = response.facet_groups[1].facets
-  var resultat =response.facet_groups[1]
 
 
 //Tri de la list
@@ -144,22 +167,45 @@ router.post('/sport',async function(req, res, next) {
 
 
    //Un point WGS84 et une distance en mètres pour le géopositionnement
+  
   let latitude = req.body.lat
-  let longitude = req.body.lon
+  let longitude = req.body.long
   let distance = req.body.dist
   let sport = req.body.sport
+  let typeActivity = req.body.type
 
-  //let sport = "Aquagym"
+/*
+  latitude = 48.7926622
+  longitude =  2.5134926
+   distance = 1000
+   sport = "Tennis"
+   typeActivity = "Toutes"
+*/
+
 
   let sportJoin = sport.replace(/ /g, "+")
   let sportActivite = encodeURI(sportJoin);
 
-  // Liste des activités hors licence etc ...
+  let natureJoin = typeActivity.replace(/ /g, "+")
+  let natureActivite = encodeURI(natureJoin);
 
-  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=${sportActivite}&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
-    
+
+  var result 
+
+  if (typeActivity == "Toutes" || typeActivity=="undefined" ){
+    var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisation=R%C3%A9cr%C3%A9ation+sportive&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.actlib=${sportActivite}&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
     var response = JSON.parse(list.getBody())
-    var result = response.records
+     result = response.records
+
+  }else {
+    // Liste des activités hors licence etc ...
+    var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.actlib=${sportActivite}&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.naturelibelle=${natureActivite}&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
+    var response = JSON.parse(list.getBody())
+    result = response.records
+  }
+
+
+
   res.json({result});
 });
 
@@ -215,7 +261,6 @@ dist = 1000
 typeActivity ="Toutes"
 */
 
-  console.log("req.body",req.body)
 
   let natureJoin = typeActivity.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
@@ -224,7 +269,7 @@ typeActivity ="Toutes"
 let result
 
 if (typeActivity == "Toutes" || typeActivity==undefined ){
-  console.log("boucle test nature")
+ 
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${lat}%2C${lon}%2C${dist}`)
   var response = JSON.parse(list.getBody())
   result = response.records
@@ -244,8 +289,6 @@ if (typeActivity == "Toutes" || typeActivity==undefined ){
 
 router.post('/filteredType',async function(req, res, next) {
   
-  console.log('recup in',req.body)
-
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let lat = req.body.lat
   let long = req.body.long
@@ -263,7 +306,6 @@ typeActivity ="Toutes"
   
   // Liste des activités hors licence etc ...
   if (type == "Toutes" || type==undefined){
-    console.log("boucle test nature")
     
     var list = request('GET', ` https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${lat}%2C${long}%2C${dist}`)
     var response = JSON.parse(list.getBody())
