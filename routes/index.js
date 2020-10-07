@@ -20,13 +20,14 @@ router.post('/nature',async function(req, res, next) {
   let lon = req.body.long
   let dist = req.body.dist
   let type = req.body.type
- // let nbActivity = 0 ;
 
+// 48.7927087,2.5133559,10000
+/*
   lat = 48.7927087
   lon = 2.5133559
-  dist = 1000
-  type = "Toutes"
-
+  dist = 10000
+  type = "Découvrables"
+*/
   let distAround = dist + " metres";
 
   // Liste des activités hors licence etc ...
@@ -50,9 +51,11 @@ let oldequipementtypecode
 let nbsiteTotal = 0
 
 let nbSiteMap = response.records.map((item)=>{
-  if (item.fields.equipementtypecode!==oldequipementtypecode ){
+console.log(item.fields.equipementid)
+
+  if (item.fields.equipementid!==oldequipementtypecode ){
     nbsiteTotal++
-    oldequipementtypecode=item.fields.equipementtypecode
+    oldequipementtypecode=item.fields.equipementid
   }
 })
 
@@ -65,7 +68,7 @@ let allResult =resultFiltered.unshift({
   
   // Affichage liste appli true / false checked
   resultFiltered.map((item,i)=>{
-    if (item.name ==type){
+    if (item.name ===type){
       item.state=true
     } else {
       item.state=false
@@ -80,9 +83,9 @@ resultFiltered.map((item,i)=> {
 
   for (let i =0 ;i<baseBoucle.length;i++ ){
 
-    resultFiltered[0].equipementtypecode.push(baseBoucle[i].fields.equipementtypecode)
+    resultFiltered[0].equipementtypecode.push(baseBoucle[i].fields.equipementid)
     if (baseBoucle[i].fields.naturelibelle == item.name){
-      item.equipementtypecode.push(baseBoucle[i].fields.equipementtypecode)
+      item.equipementtypecode.push(baseBoucle[i].fields.equipementid)
     }
   }
 
@@ -92,15 +95,14 @@ resultFiltered.map((item,i)=> {
 })
 
 resultFiltered.map((item,i)=>{
- let uniqValue = new Set(item.equipementtypecode)
- const arrayValue = [...uniqValue]
+  let uniqValue = new Set(item.equipementtypecode)
+  const arrayValue = [...uniqValue]
   item.equipementtypecode = arrayValue
- item.nbSite = arrayValue.length
+  item.nbSite = arrayValue.length
 })
 
 
-
-res.json({resultFiltered});
+res.json({resultFiltered,response});
 
 });
 
@@ -262,13 +264,14 @@ router.post('/listpoint',async function(req, res, next) {
   let dist = Number(req.body.dist)
   let typeActivityRaw = req.body.type
 
+
 /*
-dist=1000
 lat = 48.7927087
 lon = 2.5133559
-typeActivityRaw ="Toutes"
-*/
+//typeActivityRaw ="Toutes"
 
+dist=5000
+*/
 
   let natureJoin = typeActivityRaw.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
