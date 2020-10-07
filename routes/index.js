@@ -3,9 +3,6 @@ var router = express.Router();
 var request = require('sync-request');
 
 
-
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
 
@@ -25,11 +22,10 @@ router.post('/nature',async function(req, res, next) {
   let type = req.body.type
  // let nbActivity = 0 ;
 
- /*
-lat = 48.7927087
-lon = 2.5133559
-dist = 1000
-*/
+  lat = 48.7927087
+  lon = 2.5133559
+  dist = 1000
+  type = "Toutes"
 
   let distAround = dist + " metres";
 
@@ -71,34 +67,40 @@ let allResult =resultFiltered.unshift({
   resultFiltered.map((item,i)=>{
     if (item.name ==type){
       item.state=true
-   
-      item.equipementtypecode=[]
     } else {
-      item.state=false,
-  
-      item.equipementtypecode=[]
+      item.state=false
     }
-   
+    item.equipementtypecode=[]
   })
   
-
+// add type code
 let baseBoucle = response.records
 
-let countNbSite = resultFiltered.map((item,i)=> {  
+resultFiltered.map((item,i)=> {  
 
   for (let i =0 ;i<baseBoucle.length;i++ ){
+
     resultFiltered[0].equipementtypecode.push(baseBoucle[i].fields.equipementtypecode)
     if (baseBoucle[i].fields.naturelibelle == item.name){
       item.equipementtypecode.push(baseBoucle[i].fields.equipementtypecode)
     }
   }
+
+
+
+ 
+})
+
+resultFiltered.map((item,i)=>{
+ let uniqValue = new Set(item.equipementtypecode)
+ const arrayValue = [...uniqValue]
+  item.equipementtypecode = arrayValue
+ item.nbSite = arrayValue.length
 })
 
 
 
-
-
-res.json({resultFiltered,total});
+res.json({resultFiltered});
 
 });
 
@@ -111,20 +113,24 @@ router.post('/sportlist',async function(req, res, next) {
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let latitude = req.body.lat
   let longitude = req.body.long
-  let distance = req.body.dist
+  let distance = Number(req.body.dist)
   let typeActivity = req.body.type
-/*
-  
+
+ /* 
   latitude = 48.7926622
   longitude =  2.5134926
    distance = 1000
-   sport = "Tennis"
-   typeActivity = "Toutes"
+   //typeActivity = "Intérieur"
+   typeActivity = "Découvert"
+  // typeActivity = "Toutes"
 */
+
   console.log("sportlist", req.body)
+  console.log(req.body)
 
   let natureJoin = typeActivity.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
+
   let result 
   let resultat
 
@@ -136,14 +142,13 @@ router.post('/sportlist',async function(req, res, next) {
      resultat =response.facet_groups[1].facets
   
   }else {
-    console.log("Autres")
     var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&facet=actlib&facet=naturelibelle&facet=utilisation&facet=utilisateurs&facet=famille&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.naturelibelle=${natureActivite}&geofilter.distance=${latitude}%2C${longitude}%2C${distance}`)
+        
     var response = JSON.parse(list.getBody())
-     result = response.facet_groups[1].facets
-     resultat =response.facet_groups[1]
+    result = response.records
+    resultat =response.facet_groups[1].facets
   }
-
-
+  console.log(resultat.length,resultat)
 
 
 //Tri de la list
@@ -158,7 +163,7 @@ result.sort(function(a,b){
 });
 
 
-res.json({result,resultat});
+res.json({result,response,resultat});
 });
 
 
@@ -167,10 +172,11 @@ router.post('/sport',async function(req, res, next) {
 
 
    //Un point WGS84 et une distance en mètres pour le géopositionnement
-  
+  console.log(req.body)
+
   let latitude = req.body.lat
   let longitude = req.body.long
-  let distance = req.body.dist
+  let distance = Number(req.body.dist)
   let sport = req.body.sport
   let typeActivity = req.body.type
 
@@ -249,33 +255,36 @@ let latCon = req.body.lat
 //recuperation des points map
 router.post('/listpoint',async function(req, res, next) {
 
+  console.log(req.body)
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let lat = req.body.lat
-  let long = req.body.long
-  let dist = req.body.dist*1
-  let typeActivity = req.body.type
+  let lon = req.body.long
+  let dist = Number(req.body.dist)
+  let typeActivityRaw = req.body.type
+
 /*
+dist=1000
 lat = 48.7927087
 lon = 2.5133559
-dist = 1000
-typeActivity ="Toutes"
+typeActivityRaw ="Toutes"
 */
 
 
-  let natureJoin = typeActivity.replace(/ /g, "+")
+  let natureJoin = typeActivityRaw.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
 
 
 let result
 
-if (typeActivity == "Toutes" || typeActivity==undefined ){
+if (typeActivityRaw == "Toutes" || typeActivityRaw==undefined ){
  
   var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&geofilter.distance=${lat}%2C${lon}%2C${dist}`)
   var response = JSON.parse(list.getBody())
   result = response.records
 }else {
   // Liste des activités hors licence etc ...
-  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.naturelibelle=${natureActivite}&geofilter.distance=${lat}%2C+${long}%2C${dist}`)
+  console.log("else")
+  var list = request('GET', `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=10000&facet=naturelibelle&facet=utilisation&refine.utilisateurs=Individuel(s)+%2F+Famille(s)&refine.naturelibelle=${natureActivite}&geofilter.distance=${lat}%2C+${lon}%2C${dist}`)
   var response = JSON.parse(list.getBody())
   result = response.records
 }
