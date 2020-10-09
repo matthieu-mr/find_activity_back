@@ -2,10 +2,48 @@ var express = require('express');
 var router = express.Router();
 var request = require('sync-request');
 
+var Mixpanel = require('mixpanel');
+
+var mixpanel = Mixpanel.init('1d67b29ef426e799247c489e8e854a74');
+
+let mixpanelEvent = () => {
+
+  let userIdMixpanel = "13793"
+  let event = "tennis" 
+  let value1 ="94"
+
+  mixpanel.track('click', {
+    distinct_id: userIdMixpanel,
+    $current_url:"list sport",
+    sport: event,
+    dept: value1,
+});
+
+mixpanel.track('screen', {
+  distinct_id: userIdMixpanel,
+  $current_url:"list sport",
+  sport: event,
+  dept: value1,
+});
+
+
+}
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
+  // Create or update a user in Mixpanel
+  mixpanelEvent()
 
+/*
+mixpanel.people.set('13793', {
+  $first_name: 'Matthieu',
+  $last_name: 'Michon',
+  $created: (new Date('jan 1 2013')).toISOString(),
+  plan: 'premium'
+});
+
+*/
   res.render('index', { title: 'hello' });
 });
 
