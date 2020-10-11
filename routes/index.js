@@ -3,6 +3,7 @@ var router = express.Router();
 var request = require('sync-request');
 
 var Mixpanel = require('mixpanel');
+var mailchimp =require ("@mailchimp/mailchimp_marketing")
 
 var mixpanel = Mixpanel.init('1d67b29ef426e799247c489e8e854a74');
 
@@ -24,9 +25,7 @@ mixpanel.track('screen', {
   $current_url:"list sport",
   sport: event,
   dept: value1,
-});
-
-
+  });
 }
 
 
