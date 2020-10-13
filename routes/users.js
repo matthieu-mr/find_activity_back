@@ -168,8 +168,91 @@ res.json( {response} );
 
 
     
+router.post('/userAdressSaved', async function(req, res, next) {
+
+  console.log("creation user", req.body)
+
+  var pseudo = "aa"
+  var email = "aa@a.com"
+  var password = "test"
+
+/* API sendi in blue 
+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
+YxPQf2waypU1AG7d
+
+*/
+  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+  
+
+  res.json( {response} );
+  });
+  
+  
+    
+router.post('/saveadresscontact', async function(req, res, next) {
+
+  console.log("creation user", req.body)
+
+  var pseudo = "aa"
+  var email = "aa@a.com"
+  var password = "test"
+
+/* API sendi in blue 
+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
+YxPQf2waypU1AG7d
+
+*/
+  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+  
+  
+  res.json( {response} );
+  });
+  
+  
+  router.post('/saveadresscontact', async function(req, res, next) {
+
+    console.log("creation user", req.body)
+  
+    var pseudo = "aa"
+    var email = "aa@a.com"
+    var password = "test"
+  
+  /* API sendi in blue 
+  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
+  YxPQf2waypU1AG7d
+  
+  */
+    var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+    
+    
+    res.json( {response} );
+    });
+
+    router.post('/saveactivity', async function(req, res, next) {
+
+      console.log("creation user", req.body)
+    
+      var pseudo = "aa"
+      var email = "aa@a.com"
+      var password = "test"
 
 
-
+      // info place
+     let date = "28/12/2020"
+     let nom:"la capsule",
+      let category:"sport",
+      let type:,
+      let adress: String, 
+      let latitude:Number, 
+      let longitude:Number,
+      let googleIdPlace:String,
+    
+    
+    
+      var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+      
+      
+      res.json( {response} );
+      });
 
 module.exports = router;
