@@ -2,16 +2,30 @@ var mongoose = require('mongoose');
 
 var favoritesPlacesSchema = mongoose.Schema({
         date : Date,
-        nom:String,
+        name:String,
         category:String,
+        adress:String,
         type:String,
-        adress: String, 
-        latitude:Number, 
-        longitude:Number,
+        city: String, 
+        postcode:String,
+        lat:Number, 
+        lon:Number,
         googleIdPlace:String,
         contact:{type:mongoose.Schema.Types.ObjectId, ref:'user'},
     });
 
+    var adressSchema = mongoose.Schema({
+        name : String,
+        tel:String,
+        mail:String,
+        adress:String,
+        type:String,
+        postcode:String,
+        city:String,
+        lat:Number, 
+        lon:Number,
+
+    });
 
 
 var userSchema = mongoose.Schema({
@@ -22,8 +36,11 @@ var userSchema = mongoose.Schema({
     salt:String,
     trackingID:String,
     adress: String, 
-    latitude:Number, 
-    longitude:Number, 
+    city:String,
+    postcode:String,
+    lat:Number, 
+    lon:Number,
+    contactInt:[adressSchema],
     contact:{type:mongoose.Schema.Types.ObjectId, ref:'user'},
     favoritesplaces:[favoritesPlacesSchema]
 });

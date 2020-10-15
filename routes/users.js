@@ -30,12 +30,12 @@ var defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.send('route user');
 });
 
 
 /* GET users listing. */
-router.post('/create',async function(req, res, next) {
+router.post('/createuser',async function(req, res, next) {
 
   console.log("creation user", req.body)
 
@@ -43,11 +43,6 @@ router.post('/create',async function(req, res, next) {
   var email = "aa@a.com"
   var password = "test"
 
-/* API sendi in blue 
-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
-YxPQf2waypU1AG7d
-
-*/
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
   console.log("user",user)
@@ -61,7 +56,15 @@ YxPQf2waypU1AG7d
       email: email,
       salt : salt,
       password: SHA256(password + salt).toString(encBase64),
-      token: uid2(32)
+      token: uid2(32),
+      contactInt:[],
+      favoritesplaces:[],
+      trackingID:"33D",
+      adress: "16 rue saint hilaire", 
+      postcode:"94100",
+      city:"Saint Maur",
+      lat:"94100", 
+      lon:"2.93", 
     });
    await newUser.save();
    res.json({ created: true });
@@ -139,8 +142,6 @@ mailchimp.get({
 // audience id default : 2676498d95
 let response 
 
-//let send = await mailchimp.get('/lists/2676498d95/members')
-
 
 let send = await mailchimp.post('/lists/2676498d95/members', {
   email_address : 'thefirst6@gmail.com',
@@ -168,91 +169,204 @@ res.json( {response} );
 
 
     
-router.post('/userAdressSaved', async function(req, res, next) {
-
-  console.log("creation user", req.body)
+router.post('/userinformation', async function(req, res, next) {
 
   var pseudo = "aa"
   var email = "aa@a.com"
   var password = "test"
-
-/* API sendi in blue 
-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
-YxPQf2waypU1AG7d
-
-*/
+  
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
   
 
-  res.json( {response} );
+  res.json( {user} );
   });
   
-  
-    
-router.post('/saveadresscontact', async function(req, res, next) {
 
-  console.log("creation user", req.body)
-
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  var password = "test"
-
-/* API sendi in blue 
-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
-YxPQf2waypU1AG7d
-
-*/
-  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-  
-  
-  res.json( {response} );
-  });
-  
-  
-  router.post('/saveadresscontact', async function(req, res, next) {
+  router.post('/saveactivity', async function(req, res, next) {
 
     console.log("creation user", req.body)
   
+    
     var pseudo = "aa"
     var email = "aa@a.com"
     var password = "test"
+
+
+    // info place
+    let item = {
+      date : "02/03/2020",
+      name:"la capsule",
+      category:"formation",
+      adress:"10 rue de la rue",
+      type:"sortie",
+      city: "Paris", 
+      postcode:"75000",
+      lat:0.23, 
+      lon:51.2,
+      googleIdPlace:"0007",
+    }
   
-  /* API sendi in blue 
-  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
-  YxPQf2waypU1AG7d
   
-  */
     var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-    
-    
-    res.json( {response} );
+
+    user.favoritesplaces.push(item)
+
+    await UserModel.updateOne(
+      {pseudo: pseudo},
+      { favoritesplaces: user.favoritesplaces }
+   
+   );
+
+
+    res.json( {user} );
+  
     });
 
-    router.post('/saveactivity', async function(req, res, next) {
 
-      console.log("creation user", req.body)
-    
+ router.post('/savecontactadress', async function(req, res, next) {
+
+      let infoRaw = req.body.info
+      let recupInfo = JSON.parse(infoRaw);
+      console.log(recupInfo.infoFormAdress.name)
+
       var pseudo = "aa"
       var email = "aa@a.com"
-      var password = "test"
 
-
-      // info place
-     let date = "28/12/2020"
-     let nom:"la capsule",
-      let category:"sport",
-      let type:,
-      let adress: String, 
-      let latitude:Number, 
-      let longitude:Number,
-      let googleIdPlace:String,
-    
+      let item = {
+        name : recupInfo.infoFormAdress.name,
+        adress:recupInfo.infoFormAdress.adress,
+        postcode:recupInfo.infoFormAdress.postcode,
+        city:recupInfo.infoFormAdress.city,
+        lat:recupInfo.infoFormAdress.lat,
+        lon:recupInfo.infoFormAdress.lon,
+      }
     
     
       var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-      
-      
-      res.json( {response} );
+      //console.log("info",user.contactInt)
+
+      if (recupInfo.type=="contact"){ 
+        user.contactInt.push(item)
+        await UserModel.updateOne(
+          {pseudo: pseudo},
+          { contactInt: user.contactInt }
+       );
+
+      }else{
+        user.favoritesplaces.push(item)
+        await UserModel.updateOne(
+          {pseudo: pseudo},
+          { favoritesplaces: user.favoritesplaces}
+       );
+      }
+
+      res.json( {user} );
       });
+
+
+  router.post('/deleteinfo', async function(req, res, next) {
+
+        console.log("creation user", req.body)
+
+        var pseudo = "aa"
+        var email = "aa@a.com"
+        var objectid = req.body.objectid
+        var type =req.body.type
+        var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+
+    if(type == "contact"){
+      console.log("contact",)
+
+      user.contactInt.map((item,i)=>{
+        if(item._id== objectid){
+          user.contactInt.splice(i,1)
+        }
+      })
+      await UserModel.updateOne(
+        {pseudo: pseudo},
+        { contactInt: user.contactInt }
+     
+     );
+    }
+
+    if(type == "activity"){
+      user.favoritesplaces.map((item,i)=>{
+        if(item._id== objectid){
+          user.favoritesplaces.splice(i,1)
+        }
+      })
+
+      await UserModel.updateOne(
+        {pseudo: pseudo},
+        { favoritesplaces: user.favoritesplaces }
+     
+     );
+    }
+    /*
+    if(type == "adressPerso"){
+
+      await UserModel.updateOne(
+        {pseudo: pseudo},
+        {        
+        "adress": "",
+        "postcode": "",
+        "city": "",
+        "lat": "",
+        "lon": "",
+        }
+     
+     );
+    }
+
+ */
+        res.json( {user} );
+        });
+
+
+router.get('/modifinfo', async function(req, res, next) {
+
+
+  console.log("creation user", req.body)
+
+  var pseudo = "aa"
+  var email = "aa@a.com"
+  var objectid = req.body.objectid
+  var type =req.body.type
+  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+
+if(type == "contact"){
+console.log("contact",)
+
+  user.contactInt.map((item,i)=>{
+      if(item._id== objectid){
+        user.contactInt.splice(i,1)
+      }else{
+        user.contactInt.push
+      }
+    })
+    
+      await UserModel.updateOne(
+        {pseudo: pseudo},
+        { contactInt: user.contactInt }
+
+      );
+    }
+
+if(type == "activity"){
+      user.favoritesplaces.map((item,i)=>{
+        if(item._id== objectid){
+          user.favoritesplaces.splice(i,1)
+        }
+      })
+
+      await UserModel.updateOne(
+        {pseudo: pseudo},
+        { favoritesplaces: user.favoritesplaces }
+
+    );
+  }
+
+  res.json( {user} );
+  });
 
 module.exports = router;
