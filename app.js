@@ -8,6 +8,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var adressRouter = require ('./routes/adress');
 var googleInfoRouter = require ("./routes/sorties")
+var sportInfoRouter = require('./routes/sport')
 
 var app = express();
 
@@ -28,8 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/adress',adressRouter)
-googleInfoRouter
 app.use('/googleinfo',googleInfoRouter )
+app.use('/sport',sportInfoRouter )
 
 
 // catch 404 and forward to error handler

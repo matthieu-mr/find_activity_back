@@ -39,39 +39,40 @@ router.post('/createuser',async function(req, res, next) {
 
   console.log("creation user", req.body)
 
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  var password = "test"
+  var pseudo = req.body.pseudo
+  var email = req.body.email
+  var password = req.body.password
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
   console.log("user",user)
+
   if (user == null){
     // no user and pseudo
     var salt = uid2(32);
     SHA256(password + salt).toString(encBase64);
 
     var newUser = new UserModel ({
-      pseudo: pseudo,
-      email: email,
+      pseudo: req.body.pseudo,
+      email:req.body.email,
       salt : salt,
       password: SHA256(password + salt).toString(encBase64),
       token: uid2(32),
       contactInt:[],
       favoritesplaces:[],
       trackingID:"33D",
-      adress: "16 rue saint hilaire", 
-      postcode:"94100",
-      city:"Saint Maur",
-      lat:"94100", 
-      lon:"2.93", 
+      adress: "", 
+      postcode:"",
+      city:"",
+      lat:"", 
+      lon:"", 
     });
    await newUser.save();
+
    res.json({ created: true });
   }else {
     // user exist
     var hash = SHA256(password + user.salt).toString(encBase64);
-    console.log(hash)
   
     if (hash === user.password) {
       let retour = "Email ou pseudo déjà utilisé, reintialiser mot de passe ? "
@@ -90,10 +91,18 @@ router.post('/login',async function(req, res, next) {
 
   console.log("creation user", req.body)
 
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  var password = "test"
+  var pseudo = req.body.pseudo
+  var email = req.body.email
+  var password = req.body.password
 
+
+  /*
+  pseudo = "aa"
+ email = "aa@a.com"
+   password = "test"
+
+
+  */
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
@@ -110,7 +119,7 @@ router.post('/login',async function(req, res, next) {
   
     if (hash === user.password) {
       let retour = true
-      res.json({ login: true,userKnow:true, retour });
+      res.json({ login: true,userKnow:true, retour,user });
 
     } else {
       let retour = "Mauvais password"
@@ -119,7 +128,7 @@ router.post('/login',async function(req, res, next) {
   }
 
 
- res.json('respond with a resource');
+// res.json('respond with a resource');
 });
 
 // Mailchimp
