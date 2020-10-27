@@ -37,16 +37,17 @@ https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equi
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let lat = req.body.lat
-  let long = req.body.long
+  let lon = req.body.long
   let dist = req.body.dist
   let type = req.body.type
-
-  console.log(req.body)
+  dist = 2500
+  console.log("list sport",req.body)
+  /*
     lat = 48.7927087
     lon = 2.5133559
-    dist = 100
+  
   //  type ="Toutes"
-
+*/
    
   let natureJoin = type.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
@@ -102,21 +103,22 @@ router.post('/mapactivity',async function(req, res, next) {
 
    //Un point WGS84 et une distance en mètres pour le géopositionnement
 
+    console.log("recup",req.body)
 
    let latitude = req.body.lat
    let longitude = req.body.long
    let distance = Number(req.body.dist)
-   let sport = req.body.sport
-   let typeActivity = req.body.type
- 
- 
+   let sport = req.body.type
+   let typeActivity = "Toutes"
+   distance = 2500
+ /*
    latitude = 48.7926622
    longitude =  2.5134926
-    distance = 5000
+    
     sport = "Tennis"
     typeActivity = "Toutes"
  
- 
+ */
  
    let sportJoin = sport.replace(/ /g, "+")
    let sportActivite = encodeURI(sportJoin);
@@ -148,7 +150,6 @@ router.post('/mapactivity',async function(req, res, next) {
         let issimilare = true
 
         let arrayResultmap = arrayResult.map((search)=>{
-          
           if(search.place_id_sport ==item.fields.insnumeroinstall ){
             issimilare = !issimilare
             search.nature_libelle.push(item.fields.naturelibelle)
@@ -183,6 +184,8 @@ arrayResult.map((item,i)=>{
   })
           
   let nextPage = false
+
+  console.log(arrayResult)
  
    res.json({arrayResult,result});
  });

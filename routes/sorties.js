@@ -9,7 +9,20 @@ var googleTypeModel = require('../models/googleTypeModel')
 
 router.get('/',  function(req, res, next) {
         let response = "hello from sortie"
-    res.json(response);
+
+    let info=["bar","Restaurant"]
+    let wording
+
+    info.map((item,i)=>{
+        if(i==0){
+            wording=`${item}`
+        }else{
+            wording=`${wording}|${item}`
+        }
+        
+    })
+
+    res.json(wording);
 });
 
 router.get('/typegoogle',async function(req, res, next) {
@@ -105,14 +118,16 @@ resposne/"status": "ZERO_RESULTS" => aucun resultats
     */
     //Un point WGS84 et une distance en mètres pour le géopositionnement
 
+    console.log("recup requete",req.body)
 
-    let lat = 48.7927087
-    let lon = 2.5133559
-    let typeactivity = "bar|restaurant"
-    let distance = 1500
+    let lat = req.body.lat
+    let lon = req.body.long
+    let typeactivity = req.body.type
+    let distance = 15000
+
     // Liste des activités hors licence etc ...
   
-     var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${distance}&keyword=${typeactivity}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+     var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${distance}&language="fr"&keyword=${typeactivity}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
      var response = JSON.parse(listRaw.getBody())
   
 
@@ -121,26 +136,34 @@ resposne/"status": "ZERO_RESULTS" => aucun resultats
   
   let result = await googleTypeModel.find();
 
-let arrayResult = []
-let nextPage = response.next_page_token
+    let arrayResult = []
+    let nextPage = response.next_page_token
+
 
 let mefInformation = response.results.map((item,i)=>{
-    console.log("information",item.name)
+    let priceLevel = item.price_level == undefined ? "Non communiqué":item.price_level
+    let nature_libelle = [`Niveau de prix : ${priceLevel}`,`Note : ${item.rating}`]
         let itemInfo = {
             name:item.name,
             lat:item.geometry.location.lat,
             lon:item.geometry.location.lng,
             place_id:item.place_id,
+            typeActivity:typeactivity,
             price_level:item.price_level,
             rating:item.rating,
             adress:item.vicinity,
-            photo:item.photos
+            photo:item.photos,
+            nature_libelle:nature_libelle,
         }
         arrayResult.push(itemInfo)
 
     })
 
-    res.json({arrayResult,nextPage});
+
+    console.log(arrayResult)
+
+
+    res.json({response,arrayResult,nextPage});
   });
   
 

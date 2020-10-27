@@ -6,7 +6,18 @@ var request = require('sync-request');
 const app = express();
 
 
-router.get('/',  function(req, res, next) {
+
+//recherche des adresses via lat & long
+router.get('/',async function(req, res, next) {
+adress="helllo adress"
+    res.json({adress});
+  });
+
+
+
+
+
+router.post('/getrdvpoint',  function(req, res, next) {
   /* 
 
   adress moa : 16 rue saint hilaire 
@@ -37,28 +48,37 @@ thibs
 pat 
 [48.835927,2.726672]
 
-  */
-
-let array1 = [
+*/
+let listAdressArray = [
   [48.792554,2.513751],
   [48.84402,2.296319],
   [48.851496,2.507546],
   [48.835927,2.726672],
 ]
 
-let info = [
-  [48.792554,2.513751],
-  [48.84402,2.296319],
-  [48.84571143,2.47587204],
-  [48.835927,2.726672]
-]
+
+let listAdressArray2 = []
+let adressFromFront = JSON.parse(req.body.info)
+
+console.log("adress",JSON.parse(req.body.info)) 
+
+adressFromFront.map((item,i)=>{
+  console.log("item",item)
+  let value=[item.lat,item.lon]
+
+  listAdressArray2.push(value)
+})
+
+
+
+console.log("value array",listAdressArray2 )
 
 let x =0
 let y = 0
 let z =0
 let total =0
 
-array1.map((item,i)=>{
+listAdressArray2.map((item,i)=>{
 
   total = total +1
   var latitude = item[0] * Math.PI / 180;
@@ -81,18 +101,27 @@ let finalLatitude=(centralLatitude * 180 )/ Math.PI
 let finalLongitude=(centralLongitude * 180) / Math.PI
 
 
+console.log("sended request",`https://api-adresse.data.gouv.fr/reverse/?lon=${finalLongitude}&lat=${finalLatitude}`)
+
 var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${finalLongitude}&lat=${finalLatitude}`)
 var response = JSON.parse(list.getBody())
 
 
-let name = response.features[0].properties.name
-let postCode = response.features[0].properties.postcode
-let city =response.features[0].properties.city
-let adress = name + ','+ postCode + ','+city
 
 
+let finalAdress = {
+  name: 'Point central',
+  adress:response.features[0].properties.name,
+  city:response.features[0].properties.city,
+  postCode:  response.features[0].properties.postcode,
+  lat:finalLatitude,
+  lon:finalLongitude
+}
 
-res.json(response);
+
+console.log("response",finalAdress)
+
+res.json(finalAdress);
   });
 
 
