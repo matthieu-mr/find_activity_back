@@ -369,33 +369,70 @@ router.post('/pointinformation',async function(req, res, next) {
   //let distance = 1000000
   let name =req.body.name
 
+  let placeId = "ChIJcc4MrKYM5kcRy6N7Jcg1nC8"
+  let responseDetail = undefined
+  let existe = false
+
+  console.log("",req.body)
+ 
+  // placeId ='ChIJ4fq5yTmcCUgR0X7sruAW7CE'
+  /*
+  latitude = '48.800065',
+  longitude = '2.53302',
+  name= 'Forme Forest',
+  placeId = 'false'
+  */
+// remplacer espace par %20 + ! accent
+
+// pas de photo :   "place_id": "ChIJcc4MrKYM5kcRy6N7Jcg1nC8",
+
+
+String.prototype.sansAccent = function(){
+  var accent = [
+      /[\300-\306]/g, /[\340-\346]/g, // A, a
+      /[\310-\313]/g, /[\350-\353]/g, // E, e
+      /[\314-\317]/g, /[\354-\357]/g, // I, i
+      /[\322-\330]/g, /[\362-\370]/g, // O, o
+      /[\331-\334]/g, /[\371-\374]/g, // U, u
+      /[\321]/g, /[\361]/g, // N, n
+      /[\307]/g, /[\347]/g, // C, c
+  ];
+  var noaccent = ['A','a','E','e','I','i','O','o','U','u','N','n','C','c']; 
+  var str = this;
+  for(var i = 0; i < accent.length; i++){
+      str = str.replace(accent[i], noaccent[i]);
+  }
+   
+  return str;
+}
+
+
+let nameModif = name.sansAccent() 
+console.log(nameModif)
+
+
+  if(placeId == false || placeId=="false"){
+    console.log("placeidfalse")
+    var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${nameModif}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+    var response = JSON.parse(listRaw.getBody())
+    console.log(response)
+    placeId = response.candidates[0].place_id
+  }
+
+  console.log("recup requete",req.body)
 
   // Liste des activités hors licence etc ...
 
-  var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${name}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
-  var response = JSON.parse(listRaw.getBody())
-
-let placeId
-let responseDetail = undefined
-let existe = false
-
-if (response.candidates[0] == undefined){
-  
-}else {
-  existe = true
-
-  placeId = response.candidates[0].place_id
+console.log("requete",`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   let responseDetailRaw = JSON.parse(detailRaw.getBody())
   responseDetail=responseDetailRaw.result
-}
-
 
 
 // get place details 
 
 
-  res.json({existe,response,responseDetail});
+  res.json({existe,responseDetail});
 });
 
 

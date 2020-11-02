@@ -184,6 +184,9 @@ router.post('/userinformation', async function(req, res, next) {
   var email = "aa@a.com"
   var password = "test"
   
+  console.log(req.body)
+
+
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
   
 
@@ -236,7 +239,7 @@ router.post('/userinformation', async function(req, res, next) {
 
       let infoRaw = req.body.info
       let recupInfo = JSON.parse(infoRaw);
-      console.log(recupInfo.infoFormAdress.name)
+      console.log(req.body)
 
       var pseudo = "aa"
       var email = "aa@a.com"
@@ -254,7 +257,7 @@ router.post('/userinformation', async function(req, res, next) {
       var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
       //console.log("info",user.contactInt)
 
-      if (recupInfo.type=="contact"){ 
+      if (req.body.type=="contact"){ 
         user.contactInt.push(item)
         await UserModel.updateOne(
           {pseudo: pseudo},
