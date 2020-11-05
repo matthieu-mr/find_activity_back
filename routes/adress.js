@@ -48,19 +48,19 @@ thibs
 pat 
 [48.835927,2.726672]
 
-*/
+
 let listAdressArray = [
   [48.792554,2.513751],
   [48.84402,2.296319],
   [48.851496,2.507546],
   [48.835927,2.726672],
 ]
-
+*/
 
 let listAdressArray2 = []
 let adressFromFront = JSON.parse(req.body.info)
 
-console.log("adress",JSON.parse(req.body.info)) 
+console.log("recup des info from front",req.body)
 
 adressFromFront.map((item,i)=>{
   console.log("item",item)
@@ -71,7 +71,6 @@ adressFromFront.map((item,i)=>{
 
 
 
-console.log("value array",listAdressArray2 )
 
 let x =0
 let y = 0

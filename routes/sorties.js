@@ -111,6 +111,9 @@ https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=CrQCIwEAA
 
 
 
+    lat = 48.7927087
+    lon = 2.5133559
+    typeactivity="restaurant"
 
 resposne/"status": "ZERO_RESULTS" => aucun resultats 
 
@@ -127,7 +130,7 @@ resposne/"status": "ZERO_RESULTS" => aucun resultats
 
     // Liste des activités hors licence etc ...
   
-     var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&radius=${distance}&language="fr"&keyword=${typeactivity}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+     var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lon}&rankby=distance&language="fr"&keyword=${typeactivity}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
      var response = JSON.parse(listRaw.getBody())
   
 

@@ -284,6 +284,11 @@ router.post('/userinformation', async function(req, res, next) {
         var email = "aa@a.com"
         var objectid = req.body.objectid
         var type =req.body.type
+
+
+
+
+
         var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
     if(type == "contact"){
@@ -335,39 +340,58 @@ router.post('/userinformation', async function(req, res, next) {
         });
 
 
-router.get('/modifinfo', async function(req, res, next) {
+router.post('/modifinfo', async function(req, res, next) {
 
-
-  console.log("creation user", req.body)
+  let infoRaw = req.body.info
+  let recupInfo = JSON.parse(infoRaw);
+  //console.log(recupInfo)
 
   var pseudo = "aa"
   var email = "aa@a.com"
-  var objectid = req.body.objectid
+
+  let newItem = {
+    name : recupInfo.infoFormAdress.name,
+    adress:recupInfo.infoFormAdress.adress,
+    postcode:recupInfo.infoFormAdress.postcode,
+    city:recupInfo.infoFormAdress.city,
+    lat:recupInfo.infoFormAdress.lat,
+    lon:recupInfo.infoFormAdress.lon,
+    isFavorite:true,
+  }
+
+  var pseudo = "aa"
+  var email = "aa@a.com"
+  var objectid = recupInfo.infoFormAdress.id
   var type =req.body.type
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
+
+
 if(type == "contact"){
-console.log("contact",)
+console.log("contact base",user.contactInt)
 
   user.contactInt.map((item,i)=>{
       if(item._id== objectid){
         user.contactInt.splice(i,1)
-      }else{
-        user.contactInt.push
+        user.contactInt.push(newItem)
       }
     })
+
+    console.log("user finish",user.contactInt)
+
     
       await UserModel.updateOne(
         {pseudo: pseudo},
         { contactInt: user.contactInt }
-
-      );
+      )
+      ;
     }
 
 if(type == "activity"){
       user.favoritesplaces.map((item,i)=>{
         if(item._id== objectid){
           user.favoritesplaces.splice(i,1)
+          user.favoritesplaces.push(newItem)
         }
       })
 
