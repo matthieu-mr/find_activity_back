@@ -369,7 +369,9 @@ router.post('/pointinformation',async function(req, res, next) {
   //let distance = 1000000
   let name =req.body.name
 
-  let placeId = "ChIJcc4MrKYM5kcRy6N7Jcg1nC8"
+ // let placeId = "ChIJcc4MrKYM5kcRy6N7Jcg1nC8"
+let placeId = false
+
   let responseDetail = undefined
   let existe = false
 
