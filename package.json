@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "heroku-postbuild": "cd reactapp && npm install && npm run build"
+    "heroku-postbuild": "cd react-app && npm install && npm run build"
 
   },
   "dependencies": {
