@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "heroku-postbuild": "cd react-app && npm install && npm run build"
+
   },
   "dependencies": {
     "@mailchimp/mailchimp_marketing": "^3.0.21",
