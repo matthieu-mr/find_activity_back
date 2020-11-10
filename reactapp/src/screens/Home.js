@@ -8,7 +8,7 @@ function Home(props) {
   return (
     <div style={styles.body}>
         <p>
-          Home 2
+          Home 3
         </p>
         
         <Link to="/newpasswordaa@a.com" >   
