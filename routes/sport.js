@@ -41,7 +41,6 @@ https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equi
   let dist = req.body.dist
   let type = req.body.type
   dist = 2500
-  console.log("list sport",req.body)
   /*
     lat = 48.7927087
     lon = 2.5133559
@@ -102,8 +101,6 @@ res.json({arrayTypeActivity,resultSport});
 router.post('/mapactivity',async function(req, res, next) {
 
    //Un point WGS84 et une distance en mètres pour le géopositionnement
-
-    console.log("recup",req.body)
 
    let latitude = req.body.lat
    let longitude = req.body.long
@@ -184,8 +181,6 @@ arrayResult.map((item,i)=>{
   })
           
   let nextPage = false
-
-  console.log(arrayResult)
  
    res.json({arrayResult,result});
  });

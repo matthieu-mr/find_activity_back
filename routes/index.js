@@ -374,8 +374,6 @@ let placeId = false
 
   let responseDetail = undefined
   let existe = false
-
-  console.log("",req.body)
  
   // placeId ='ChIJ4fq5yTmcCUgR0X7sruAW7CE'
   /*
@@ -410,22 +408,14 @@ String.prototype.sansAccent = function(){
 
 
 let nameModif = name.sansAccent() 
-console.log(nameModif)
-
 
   if(placeId == false || placeId=="false"){
-    console.log("placeidfalse")
     var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${nameModif}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
     var response = JSON.parse(listRaw.getBody())
-    console.log(response)
     placeId = response.candidates[0].place_id
   }
 
-  console.log("recup requete",req.body)
-
   // Liste des activités hors licence etc ...
-
-console.log("requete",`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
   let responseDetailRaw = JSON.parse(detailRaw.getBody())
   responseDetail=responseDetailRaw.result

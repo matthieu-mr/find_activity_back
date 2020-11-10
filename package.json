@@ -14,6 +14,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "mailchimp-api-v3": "^1.14.0",
+    "materialize-css": "^1.0.0-rc.2",
     "mixpanel": "^0.13.0",
     "mongoose": "^5.9.25",
     "morgan": "~1.9.1",

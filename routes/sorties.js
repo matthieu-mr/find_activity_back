@@ -121,8 +121,6 @@ resposne/"status": "ZERO_RESULTS" => aucun resultats
     */
     //Un point WGS84 et une distance en mètres pour le géopositionnement
 
-    console.log("recup requete",req.body)
-
     let lat = req.body.lat
     let lon = req.body.long
     let typeactivity = req.body.type

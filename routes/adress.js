@@ -60,10 +60,8 @@ let listAdressArray = [
 let listAdressArray2 = []
 let adressFromFront = JSON.parse(req.body.info)
 
-console.log("recup des info from front",req.body)
 
 adressFromFront.map((item,i)=>{
-  console.log("item",item)
   let value=[item.lat,item.lon]
 
   listAdressArray2.push(value)
@@ -99,9 +97,6 @@ var centralLatitude = Math.atan2(z, centralSquareRoot);
 let finalLatitude=(centralLatitude * 180 )/ Math.PI
 let finalLongitude=(centralLongitude * 180) / Math.PI
 
-
-console.log("sended request",`https://api-adresse.data.gouv.fr/reverse/?lon=${finalLongitude}&lat=${finalLatitude}`)
-
 var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${finalLongitude}&lat=${finalLatitude}`)
 var response = JSON.parse(list.getBody())
 
@@ -116,9 +111,6 @@ let finalAdress = {
   lat:finalLatitude,
   lon:finalLongitude
 }
-
-
-console.log("response",finalAdress)
 
 res.json(finalAdress);
   });
@@ -146,24 +138,19 @@ res.json(finalAdress);
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
 
-  let lonCon = req.body.long
-  let latCon = req.body.lat
+  let lon = req.body.lon
+  let lat = req.body.lat
   
     // Liste des activités hors licence etc ...
-  
-    var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lonCon}&lat=${latCon}`)
+    var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`)
     var response = JSON.parse(list.getBody())
-  
   
     let name = response.features[0].properties.name
     let postCode = response.features[0].properties.postcode
     let city =response.features[0].properties.city
     let adress = name + ','+ postCode + ','+city
-  
-    res.json({adress});
+    res.json({adress,response});
   });
 
-
-  
 
   module.exports = router;

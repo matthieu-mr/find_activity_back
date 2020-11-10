@@ -37,7 +37,6 @@ router.get('/', function(req, res, next) {
 /* GET users listing. */
 router.post('/createuser',async function(req, res, next) {
 
-  console.log("creation user", req.body)
 
   var pseudo = req.body.pseudo
   var email = req.body.email
@@ -45,7 +44,6 @@ router.post('/createuser',async function(req, res, next) {
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
-  console.log("user",user)
 
   if (user == null){
     // no user and pseudo
@@ -89,8 +87,6 @@ router.post('/createuser',async function(req, res, next) {
 /* GET users listing. */
 router.post('/login',async function(req, res, next) {
 
-  console.log("creation user", req.body)
-
   var pseudo = req.body.pseudo
   var email = req.body.email
   var password = req.body.password
@@ -106,17 +102,13 @@ router.post('/login',async function(req, res, next) {
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
-  console.log("user",user)
-
   if (user == null){
     // no user and pseudo
     let retour = "Utilisateur inconnu "
     res.json({ login: false,userKnow:false,retour });
   }else {
     // user exist
-    var hash = SHA256(password + user.salt).toString(encBase64);
-    console.log(hash)
-  
+    var hash = SHA256(password + user.salt).toString(encBase64);  
     if (hash === user.password) {
       let retour = true
       res.json({ login: true,userKnow:true, retour,user });
@@ -127,8 +119,6 @@ router.post('/login',async function(req, res, next) {
     }
   }
 
-
-// res.json('respond with a resource');
 });
 
 // Mailchimp
@@ -177,6 +167,18 @@ res.json( {response} );
 });
 
 
+router.post('/changepassword', async function(req, res, next) {
+
+  var pseudo = "aa"
+  var email = "aa@a.com"
+  console.log(req.body)
+  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+  
+
+  res.json( {user} );
+  });
+  
+
     
 router.post('/userinformation', async function(req, res, next) {
 
@@ -184,9 +186,6 @@ router.post('/userinformation', async function(req, res, next) {
   var email = "aa@a.com"
   var password = "test"
   
-  console.log(req.body)
-
-
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
   
 
@@ -196,9 +195,6 @@ router.post('/userinformation', async function(req, res, next) {
 
   router.post('/saveactivity', async function(req, res, next) {
 
-    console.log("creation user", req.body)
-  
-    
     var pseudo = "aa"
     var email = "aa@a.com"
     var password = "test"
@@ -239,7 +235,6 @@ router.post('/userinformation', async function(req, res, next) {
 
       let infoRaw = req.body.info
       let recupInfo = JSON.parse(infoRaw);
-      console.log(req.body)
 
       var pseudo = "aa"
       var email = "aa@a.com"
@@ -278,21 +273,15 @@ router.post('/userinformation', async function(req, res, next) {
 
   router.post('/deleteinfo', async function(req, res, next) {
 
-        console.log("creation user", req.body)
-
         var pseudo = "aa"
         var email = "aa@a.com"
         var objectid = req.body.objectid
         var type =req.body.type
 
 
-
-
-
         var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
     if(type == "contact"){
-      console.log("contact",)
 
       user.contactInt.map((item,i)=>{
         if(item._id== objectid){
@@ -344,7 +333,6 @@ router.post('/modifinfo', async function(req, res, next) {
 
   let infoRaw = req.body.info
   let recupInfo = JSON.parse(infoRaw);
-  //console.log(recupInfo)
 
   var pseudo = "aa"
   var email = "aa@a.com"
@@ -368,7 +356,6 @@ router.post('/modifinfo', async function(req, res, next) {
 
 
 if(type == "contact"){
-console.log("contact base",user.contactInt)
 
   user.contactInt.map((item,i)=>{
       if(item._id== objectid){
