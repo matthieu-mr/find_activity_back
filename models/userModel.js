@@ -11,6 +11,7 @@ var favoritesPlacesSchema = mongoose.Schema({
         lat:Number, 
         lon:Number,
         googleIdPlace:String,
+        icon:String,
         contact:{type:mongoose.Schema.Types.ObjectId, ref:'user'},
     });
 
@@ -24,6 +25,7 @@ var favoritesPlacesSchema = mongoose.Schema({
         city:String,
         lat:Number, 
         lon:Number,
+        isFavorite:String,
 
     });
 

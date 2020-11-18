@@ -11,7 +11,7 @@ function Home(props) {
           Home 3 - coucou
         </p>
         
-        <Link to="/newpasswordaa@a.com" >   
+        <Link to="/newpassword5f86cb003d835c1a2cc317fc" >   
         <Button variant="contained" color="primary">
             Lien
         </Button>

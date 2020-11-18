@@ -15,8 +15,6 @@ adress="helllo adress"
 
 
 
-
-
 router.post('/getrdvpoint',  function(req, res, next) {
   /* 
 

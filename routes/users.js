@@ -37,7 +37,7 @@ router.get('/', function(req, res, next) {
 /* GET users listing. */
 router.post('/createuser',async function(req, res, next) {
 
-
+console.log(req.body)
   var pseudo = req.body.pseudo
   var email = req.body.email
   var password = req.body.password
@@ -91,14 +91,6 @@ router.post('/login',async function(req, res, next) {
   var email = req.body.email
   var password = req.body.password
 
-
-  /*
-  pseudo = "aa"
- email = "aa@a.com"
-   password = "test"
-
-
-  */
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
@@ -167,25 +159,15 @@ res.json( {response} );
 });
 
 
-router.post('/changepassword', async function(req, res, next) {
-
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  console.log(req.body)
-  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-  
-
-  res.json( {user} );
-  });
-  
 
     
 router.post('/userinformation', async function(req, res, next) {
 
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  var password = "test"
-  
+  console.log(req.body)
+
+  var pseudo = req.body.pseudo
+  var email = req.body.email
+
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
   
 
@@ -193,42 +175,6 @@ router.post('/userinformation', async function(req, res, next) {
   });
   
 
-  router.post('/saveactivity', async function(req, res, next) {
-
-    var pseudo = "aa"
-    var email = "aa@a.com"
-    var password = "test"
-
-
-    // info place
-    let item = {
-      date : "02/03/2020",
-      name:"la capsule",
-      category:"formation",
-      adress:"10 rue de la rue",
-      type:"sortie",
-      city: "Paris", 
-      postcode:"75000",
-      lat:0.23, 
-      lon:51.2,
-      googleIdPlace:"0007",
-    }
-  
-  
-    var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-
-    user.favoritesplaces.push(item)
-
-    await UserModel.updateOne(
-      {pseudo: pseudo},
-      { favoritesplaces: user.favoritesplaces }
-   
-   );
-
-
-    res.json( {user} );
-  
-    });
 
 
  router.post('/savecontactadress', async function(req, res, next) {
@@ -236,45 +182,59 @@ router.post('/userinformation', async function(req, res, next) {
       let infoRaw = req.body.info
       let recupInfo = JSON.parse(infoRaw);
 
-      var pseudo = "aa"
-      var email = "aa@a.com"
+      var pseudo = ""
+      var email = req.body.email
+      email="m.michon.rossel@gmail.com"
 
-      let item = {
-        name : recupInfo.infoFormAdress.name,
-        adress:recupInfo.infoFormAdress.adress,
-        postcode:recupInfo.infoFormAdress.postcode,
-        city:recupInfo.infoFormAdress.city,
-        lat:recupInfo.infoFormAdress.lat,
-        lon:recupInfo.infoFormAdress.lon,
-      }
+      console.log(recupInfo)
+
+
     
+      let item = {
+        name : recupInfo.name,
+        adress:recupInfo.adress,
+        postcode:recupInfo.postcode,
+        city:recupInfo.city,
+        lat:recupInfo.lat,
+        lon:recupInfo.lon,
+        isFavorite:true,
+        icon:recupInfo.icon,
+        googleIdPlace:recupInfo.googleIdPlace
+      }
+      console.log(item)
+
     
       var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
       //console.log("info",user.contactInt)
 
       if (req.body.type=="contact"){ 
-        user.contactInt.push(item)
+        let listAdress =  user.contactInt
+        listAdress.push(item)
+
         await UserModel.updateOne(
-          {pseudo: pseudo},
-          { contactInt: user.contactInt }
+          {email: email},
+          {contactInt: listAdress}
        );
 
       }else{
-        user.favoritesplaces.push(item)
+        let listAdress =  user.favoritesplaces
+        listAdress.push(item)
+      
         await UserModel.updateOne(
-          {pseudo: pseudo},
-          { favoritesplaces: user.favoritesplaces}
+          {email: email},
+          { favoritesplaces: listAdress}
        );
       }
 
+      console.log(user)
       res.json( {user} );
       });
 
 
   router.post('/deleteinfo', async function(req, res, next) {
 
-        var pseudo = "aa"
-        var email = "aa@a.com"
+        var pseudo = ""
+        var email = req.body.email
         var objectid = req.body.objectid
         var type =req.body.type
 
@@ -289,7 +249,7 @@ router.post('/userinformation', async function(req, res, next) {
         }
       })
       await UserModel.updateOne(
-        {pseudo: pseudo},
+        {email: email},
         { contactInt: user.contactInt }
      
      );
@@ -303,7 +263,7 @@ router.post('/userinformation', async function(req, res, next) {
       })
 
       await UserModel.updateOne(
-        {pseudo: pseudo},
+        {email: email},
         { favoritesplaces: user.favoritesplaces }
      
      );
@@ -324,7 +284,9 @@ router.post('/userinformation', async function(req, res, next) {
      );
     }
 
+
  */
+console.log(user)
         res.json( {user} );
         });
 
@@ -334,41 +296,39 @@ router.post('/modifinfo', async function(req, res, next) {
   let infoRaw = req.body.info
   let recupInfo = JSON.parse(infoRaw);
 
-  var pseudo = "aa"
-  var email = "aa@a.com"
+  var pseudo = ""
+  var email = req.body.email
+
+  console.log("modifinfo",recupInfo)
+
 
   let newItem = {
-    name : recupInfo.infoFormAdress.name,
-    adress:recupInfo.infoFormAdress.adress,
-    postcode:recupInfo.infoFormAdress.postcode,
-    city:recupInfo.infoFormAdress.city,
-    lat:recupInfo.infoFormAdress.lat,
-    lon:recupInfo.infoFormAdress.lon,
+    name : recupInfo.name,
+    adress:recupInfo.adress,
+    postcode:recupInfo.postcode,
+    city:recupInfo.city,
+    lat:recupInfo.lat,
+    lon:recupInfo.lon,
     isFavorite:true,
+    icon:recupInfo.icon,
+    googleIdPlace:recupInfo.googleIdPlace
   }
 
-  var pseudo = "aa"
-  var email = "aa@a.com"
-  var objectid = recupInfo.infoFormAdress.id
+  var objectid = recupInfo.id
   var type =req.body.type
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
-
-
+console.log(type)
 if(type == "contact"){
-
+  console.log('type contact')
   user.contactInt.map((item,i)=>{
       if(item._id== objectid){
-        user.contactInt.splice(i,1)
-        user.contactInt.push(newItem)
+        user.contactInt.splice(i,1,newItem)
       }
     })
-
-    console.log("user finish",user.contactInt)
-
     
       await UserModel.updateOne(
-        {pseudo: pseudo},
+        {email: email},
         { contactInt: user.contactInt }
       )
       ;
@@ -377,19 +337,100 @@ if(type == "contact"){
 if(type == "activity"){
       user.favoritesplaces.map((item,i)=>{
         if(item._id== objectid){
-          user.favoritesplaces.splice(i,1)
-          user.favoritesplaces.push(newItem)
+          user.favoritesplaces.splice(i,1,newItem)
         }
       })
 
       await UserModel.updateOne(
-        {pseudo: pseudo},
+        {email: email},
         { favoritesplaces: user.favoritesplaces }
 
     );
   }
-
   res.json( {user} );
   });
+
+  router.post('/sendmailnewpassword', async function(req, res, next) {
+    console.log(req.body)
+    let result =true 
+    
+    var pseudo = "aa"
+    var email = "m.michon@yahoo.fr"
+    
+    var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+   
+let idUser = user._id
+let emailUser = user.email
+let url =`http://localhost:3001/newpassword${idUser}`
+  
+        let transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 465,
+          secure: true,
+          auth: {
+              // should be replaced with real sender's account
+              user: 'm.michon.rossel@gmail.com',
+              pass: 'hbmxoxyvcrunsrxb'
+          },
+          tls: { 
+            // do not fail on invalid certs 
+            rejectUnauthorized: false 
+           } 
+      });
+      let mailOptions = {
+          // should be replaced with real recipient's account
+          from: '"Quoi Faire" <m.michon.rossel@gmail.com>',
+          to: email,
+          subject: "Quoi Faire - Réinitialisation de votre mot de passe ",
+          text:  `<b>Bonjour <strong>${user.pseudo} </strong> ! </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
+          Pour réinitialiser ce dernier, suivez ce lien : <br/> 
+          <a href="${url}" target="_blank" >Changer mon mot de passe</a>` ,
+          html: `<b>Bonjour <strong>${user.pseudo}</strong> </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
+          Pour le réinitialiser, il vous suffit juste de suivre ce lien : <br/> <br/>
+          <a href="${url}" target="_blank" >Changer mon mot de passe</a>
+          <br/><br/> <br/>
+          Cordialement,<br/>
+          L'équipe de Quoi faire` // html body
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        console.log(info,error)
+          if (error) {
+              result = false
+              return console.log("erreure transporter",error);
+          }
+          result = true
+          console.log("Message sent: %s", info.messageId);
+          // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+        
+          // Preview only available when sending through an Ethereal account
+          console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+      });
+    
+           res.json( {result} );
+        });
+
+
+        router.post('/changepassword', async function(req, res, next) {
+
+          let userId = "5f86cb003d835c1a2cc317fc"
+          let password = "test"
+
+          var salt = uid2(32);
+          SHA256(password + salt).toString(encBase64);
+
+          await UserModel.updateOne(
+            {_id: userId},
+            { 
+              salt : salt,
+              password: SHA256(password + salt).toString(encBase64),
+              token: uid2(32) }
+          )
+
+       let user=await UserModel.findById(
+            {_id:userId},
+          )
+
+          res.json( {user} );
+          });
 
 module.exports = router;

@@ -9,6 +9,5 @@ useUnifiedTopology : true
 mongoose.connect('mongodb+srv://mmr:Revenga94@cluster0-pg57n.mongodb.net/quoifaire?retryWrites=true&w=majority',
 options,
 function(err) {
-console.log(err);
 }
 );
