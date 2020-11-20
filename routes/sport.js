@@ -25,7 +25,7 @@ mixpanel.people.set('13793', {
 
 //filtrage par type d'activite
 
-router.post('/filteredType',async function(req, res, next) {
+router.post('/filteredtype',async function(req, res, next) {
 
 /*
 Request all
@@ -34,6 +34,7 @@ Request typr
 https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&facet=naturelibelle&facet=actlib&refine.naturelibelle=D%C3%A9couvert&exclude.utilisateurs=Scolaires+%2F+Universit%C3%A9s&geofilter.distance=48.7926622%2C+2.5134926%2C5000
 
 */
+console.log(req.body)
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let lat = req.body.lat
@@ -44,9 +45,9 @@ https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equi
   /*
     lat = 48.7927087
     lon = 2.5133559
-  
-  //  type ="Toutes"
+    type ="Toutes"
 */
+    console.log( `https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&facet=naturelibelle&facet=actlib&exclude.utilisateurs=Scolaires+%2F+Universit%C3%A9s&geofilter.distance=${lat}%2C${lon}%2C${dist}`)
    
   let natureJoin = type.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
