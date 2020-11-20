@@ -169,7 +169,7 @@ console.log(req.body)
 
 var pseudo = req.body.pseudo
 var email = req.body.email
-email = "m.michon.rossel@gmail.com"
+//email = "m.michon.rossel@gmail.com"
 var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
 
