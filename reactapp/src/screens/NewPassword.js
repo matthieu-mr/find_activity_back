@@ -15,7 +15,6 @@ import ReportProblemIcon from '@material-ui/icons/ReportProblem';
 function NewPassword(props) {
  // let { id } = useParams();
  const { classes } = props;
-console.log("hello",props.match.params.id)
 
 const [pwd1,setPwd1] = useState()
 const [pwd2,setPwd2] = useState()

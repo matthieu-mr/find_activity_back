@@ -160,10 +160,6 @@ let mefInformation = response.results.map((item,i)=>{
 
     })
 
-
-    console.log(arrayResult)
-
-
     res.json({response,arrayResult,nextPage});
   });
   

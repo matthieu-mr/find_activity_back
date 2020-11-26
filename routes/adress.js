@@ -125,7 +125,7 @@ res.json(finalAdress);
   let adressModif = adress.replace(/ /g, '+');
 
   // Liste des activités hors licence etc ...
-  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=50`)
+  var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=20`)
   var response = JSON.parse(list.getBody())
 
   var result = response.features
