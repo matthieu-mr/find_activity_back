@@ -57,11 +57,13 @@ let listAdressArray = [
 
 let listAdressArray2 = []
 let adressFromFront = JSON.parse(req.body.info)
+console.log(req.body)
 
 
 adressFromFront.map((item,i)=>{
-  let value=[item.lat,item.lon]
 
+  let value=[item.lat,item.lon]
+  console.log(value)
   listAdressArray2.push(value)
 })
 

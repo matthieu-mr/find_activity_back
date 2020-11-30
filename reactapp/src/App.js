@@ -14,14 +14,15 @@ import {Provider} from 'react-redux';
 // import reducers
 import userInformation from './reducers/UserInformation'
 import listAdressParticipant from './reducers/ListAdressParticipant'
+import rdvPointAdress from './reducers/RdvPointAdress'
 
-import MapUser from './screens/Map'
-import listTest from './screens/ListTest'
+
+import MapActivity from './screens/MapActivity'
 import { ThemeProvider } from '@material-ui/core/styles';
 
 import theme from './theme';
 
-const store = createStore(combineReducers({userInformation,listAdressParticipant}))
+const store = createStore(combineReducers({userInformation,listAdressParticipant,rdvPointAdress}))
 
 
 function App() {
@@ -32,8 +33,7 @@ function App() {
     <Switch>
       <Route path="/" exact component={Home} />
       <Route path="/newpassword:id" component={Password} />
-      <Route path="/carte" component={MapUser} />
-      <Route path="/list" component={listTest} />
+      <Route path="/mapactivity" component={MapActivity} />
     </Switch>
   </Router>
   </Provider>

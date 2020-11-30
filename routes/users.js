@@ -17,8 +17,6 @@ server: "us2",
 });
 */ 
 
-
-
 var Mailchimp = require('mailchimp-api-v3')
 var mailchimp = new Mailchimp("f32f5907752849fe85b7827c9fd9c352-us2");
 
@@ -169,8 +167,20 @@ console.log(req.body)
 
 var pseudo = req.body.pseudo
 var email = req.body.email
+var id = req.body.id
 //email = "m.michon.rossel@gmail.com"
-var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+var allInfo = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo},{_id:id}] });
+
+var user={
+  id:allInfo._id,
+  pseudo:allInfo.pseudo,
+  email: allInfo.email,
+  contactInt:allInfo.contactInt,
+  favoritesplaces:allInfo.favoritesplaces,
+  trackingID:allInfo.trackingID
+}
+
+console.log(user)
 
 
 res.json( {user} );

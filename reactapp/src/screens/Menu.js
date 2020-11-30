@@ -16,14 +16,24 @@ import RestaurantMenuIcon from '@material-ui/icons/RestaurantMenu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 
-function MenuApp(props) {
-    const { index, classes } = props;
+var backgroundColorTest = "#0077c2"
 
+
+
+function MenuApp(props) {
+
+// boop Article = https://www.joshwcomeau.com/react/boop/?utm_campaign=sebastien_lorber_newsletter&utm_medium=email&utm_source=Revue%20newsletter
+
+    const { index, classes } = props;
+    const [isBooped, setIsBooped] = useState(false);
+    backgroundColorTest="red"
+    console.log(isBooped)
     const [isShown, setIsShown] = useState(false);
 
-    let MenuNavigation = ()=>{
 
+    let MenuNavigation = ()=>{
         if(isShown){
+  
         return (
             <div className={classes.allLabel}>
                <p className={classes.wording}> <MenuIcon className={classes.iconStyle} /> Menu</p>
@@ -56,8 +66,8 @@ function MenuApp(props) {
 
   return (
     <div className={classes.body}        
-            onMouseEnter={() => setIsShown(true)}
-            onMouseLeave={() => setIsShown(false)}
+            onMouseEnter={() =>{ setIsShown(true);setIsBooped(true)}}
+            onMouseLeave={() =>{ setIsShown(false);setIsBooped(false)}}
             > 
         < MenuNavigation />
     </div>
@@ -74,15 +84,16 @@ MenuApp.propTypes = {
 
 const styles = {
     body:{
-      backgroundColor: "#0077c2",
+      backgroundColor: backgroundColorTest,
       paddingLeft:"15px", 
       paddingRight:"15px", 
-      width:50, 
+      width:50,
       '&:hover': {
         borderColor: '#0062cc',
         boxShadow: 'none',
         color:"black",
-        width:"20%"
+        width:"20%",
+       
       },
     },
 

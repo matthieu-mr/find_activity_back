@@ -1,59 +1,52 @@
   
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect,PureComponent,Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles  } from '@material-ui/core/styles';
 import {connect} from 'react-redux';
 import { Map, Marker, Popup, TileLayer,MapContainer } from "react-leaflet";
 import { Icon } from "leaflet";
-import { Link, Element, Events, animateScroll as scroll, scrollSpy, scroller } from 'react-scroll'
 import { FixedSizeList } from 'react-window';
-import List from '@material-ui/core/List';
-
+import ListItem from '@material-ui/core/ListItem';
 // import css
+import GoogleMapReact from 'google-map-react';
+
+
+
 // import icon
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import PersonIcon from '@material-ui/icons/Person';
 import SendIcon from '@material-ui/icons/Send';
 import '../App.css'
 // import css
-import { Button } from '@material-ui/core';
+import { Button,Card,Typography,TextField,AppBar,Tabs,Tab,Box,withStyles } from '@material-ui/core';
 //import {Link} from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
 
+// import component 
+import MenuApp from './Menu'
 
 // import component
-import ListItem from './components/listItemAdress'
+import ListItemComponent from './components/listItemAdress'
+import CustomMarker from './components/markerMap'
 
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props;
   
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box p={3}>
-            <Typography>{children}</Typography>
-          </Box>
-        )}
-      </div>
-    );
-  }
-  
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box p={3}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
 
 
 
@@ -64,10 +57,14 @@ function MapUser(props) {
 
     const [value, setValue] = React.useState(0);
     const [adressSearch,setAdressSearch] = useState("16 rue saint hilaire")
+    const [listAdressParticipant,setListAdressParticipant]=useState([])
 
     const handleChange = (event, newValue) => {
       setValue(newValue);
     };
+
+  
+console.log("list adresse participant",listAdressParticipant)
 
     useEffect(()=>{
         async function recupDonnée(){
@@ -83,35 +80,52 @@ function MapUser(props) {
 
     },[adressSearch])     
 
-    let ListResultSearchAdress = listAdressResult.map((item,i)=>{
-        let cityWording =`${item.properties.postcode} - ${item.properties.city} `
-        
-        return <ListItem key={i} title1={item.properties.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
-    
-      })
+    useEffect(()=>{
+      setListAdressParticipant(props.listAdressParticipant)
+  },[props.listAdressParticipant]) 
 
-      /* old 
-      
-      
-      <Card className={classes.cardAllContent}>
+
+
+  return (
+<div className={classes.body}> 
+  <MenuApp />
+
+<Card className={classes.cardAllContent} >
+
+    <div >
     <AppBar position="static">
-        <Tabs value={value} onChange={handleChange}          
-         indicatorColor="primary"
-          variant="scrollable"
-          scrollButtons="auto"
-          aria-label="scrollable auto tabs example">
-            <Tab label="Liste des participants"  />
-            <Tab label="Vos Adresses"  />
+        <Tabs 
+            value={value} 
+            onChange={handleChange}          
+            indicatorColor="primary"
+            textColor="primary"
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+            className={classes.tabHeader}
+          >
+
+            <Tab label="Participants"  />
+            <Tab label="Vos Contacts"  />
+            <Tab label="Ajout Adresse"/>
             <Tab label="Votre position"/>
         </Tabs>
     </AppBar>
     <TabPanel value={value} index={0}>
-    <TextField id="standard-basic" label="Rechercher une adresse" onChange={(e)=> setAdressSearch(e.target.value)} />    
- 
-    <List component="nav" className={classes.root} aria-label="contacts">
- 
-  {ListResultSearchAdress}
-  </List>
+    <TextField id="standard-basic" className={classes.inputStyle} label="Rechercher une adresse" onChange={(e)=> setAdressSearch(e.target.value)} />    
+
+            <div className={classes.showList}> 
+                <ul>
+                    { listAdressResult.map((item,i)=>{
+                    let cityWording =`${item.properties.postcode} - ${item.properties.city} `
+                    
+                    return (
+                        <ListItemComponent key={i} title1={item.properties.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
+                    )
+                
+                })}
+                </ul>
+            </div>
     </TabPanel>
     <TabPanel value={value} index={1}>
         Item Two
@@ -119,69 +133,112 @@ function MapUser(props) {
     <TabPanel value={value} index={2}>
         Item Three
     </TabPanel>
+    <TabPanel value={value} index={3}>
+        Item 4
+    </TabPanel>
+    </div>  
+
+    <div className={classes.buttonValidate} >  
+      <Button variant="contained" color="secondary">
+        Valider participants    <SendIcon  className={classes.iconSend}/>
+      </Button>
+    </div>
+
 </Card>
 
 
-<MapContainer
-  className={classes.mapContainer}
-  center={[51.0, 19.0]}
-  zoom={4}
-  maxZoom={18}
->
-  <TileLayer
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-  />
 
-</MapContainer>
+  <MapContainer
+    className={classes.mapContainer}
+    center={[51.0, 19.0]}
+    zoom={4}
+    maxZoom={18}
+    >
+      <TileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      />
 
-
-      */
-
-
-  return (
-<div className={classes.body}> 
-<FixedSizeList height={400} width={300} itemSize={46} itemCount={200}>
-          {ListResultSearchAdress}
-      </FixedSizeList>
-
-
+      {listAdressParticipant.map((item,i)=>{
+      return (
+        <CustomMarker 
+          id={i}
+          name={item.name}
+          postCode={item.postcode}
+          adress={item.adress} 
+          city={item.city}
+          isFavorite= {item.isFavorite}
+          lat={item.lat}
+          lon={item.lon}
+        />
+      )
+    })}
+  </MapContainer>
 </div>
 
      
   );
 }
-
 const styles = {
 
     body:{
       backgroundColor:"#80d6ff",
       display:"flex",
       flex:1,  
-      
+    },
+
+    inputStyle:{
+      width:"100%"
+    },
+    tabHeader:{
+      backgroundColor: "#0077c2",
+      '&$selected': {
+        color: '#1890ff',
+        backgroundColor: "red",
+
+      },    '&:focus': {
+        color: '#40a9ff',
+      },
     },
     cardAllContent:{
-        backgroundColor:"white",
-        width:'30%',
-        maxHeight:"100vh"
+        display:"flex",
+        flexDirection:"column",
+        width:'35%',
+        maxHeight:"100vh",
+        justifyContent:"space-between",
+        alignItems:"stretch"
+    },
+    showList:{
+        maxHeight:"77vh",
+        overflowY: "auto",
+        },
+
+    buttonValidate:{
+      display:"flex",
+      justifyContent:"center",
+      width:'100%',
+      marginBottom:"15px",
     },
     mapcontainer:{
         backgroundColor:"white",
-        width:'80%',
+        width:'100%',
         zIndex:1,
         position: "absolute",
         marginLeft:50,
         marginTop:30,
         maxHeigth:"10%"
-    }
+    },
+    iconSend:{
+      marginLeft:15
+    },
+
     };
 
 
 
     
     MapUser.propTypes = {
-        index: PropTypes.number.isRequired,
-
+      index: PropTypes.number.isRequired,
       classes: PropTypes.object.isRequired,
     };
 
@@ -195,11 +252,11 @@ const styles = {
       }
       
       function mapStateToProps(state) {
-        return { informationUser: state.informationUser }
+        return { informationUser: state.informationUser,listAdressParticipant:state.listAdressParticipant }
       }
         
     export default connect(
         mapStateToProps, 
           mapDispatchToProps
-      )( withStyles(styles)(MapUser));
+      )( withStyles(styles)(test));
           

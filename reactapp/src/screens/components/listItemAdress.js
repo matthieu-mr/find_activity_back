@@ -20,30 +20,21 @@ function ListItemAdress(props) {
     const { classes } = props;
 
 let addAdress=()=>{
-    props.addParticipantList(props)
+
+  switch (props.action) {
+    case 'addParticipant':
+      props.addParticipantList(props)
+      break;
+
+
+    default:
+      console.log(`autre action ${props.action}.`);
+  }
+
 
 }
 
-
-/*old
-<div className={classes.containerList} > 
-    <Button onClick={()=>addAdress()} className={classes.button}> 
-            <List className={classes.listItem}>
-                <ListItem className={classes.listItem}>
-                  <ListItemText
-                    primary={props.title1}
-                    secondary={props.title2}
-                  />
-                      <AddCircleOutlineIcon style={{ color:"#42a5f5"}} />
-                </ListItem>
-                <Divider />
-            </List>
-    </Button>
-
-</div>
-
-
-*/
+console.log(props.action)
 
   return (
 

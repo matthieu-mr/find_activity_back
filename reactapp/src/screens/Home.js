@@ -44,7 +44,7 @@ let byPassNavigation =()=>{
   }
   props.addInfoUser(user)
 
-  history.push("/list");
+  history.push("/mapactivity");
 
 }
 
