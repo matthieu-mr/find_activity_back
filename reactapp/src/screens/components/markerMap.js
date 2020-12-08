@@ -21,13 +21,10 @@ import { Button,Card,Typography,TextField,AppBar,Tabs,Tab,Box,withStyles } from 
 
 function MarkerMap(props) {
 const { index, classes } = props;
-const position = [props.lat,props.lon]
+const position = [props.lon,props.lat]
 let wordingCity=`${props.postCode},  ${props.city}`
 
 let colorMarker="green"
-
-console.log("recup from marker",props)
-
 
 switch (props.type) {
   case 'rdvPoint':
@@ -35,10 +32,8 @@ switch (props.type) {
     break;
 
   default:
-    console.log(`Sorry, we are out of .`);
+    //console.log(`Sorry, we are out of .`);
 }
-
-
 
 
 const iconMarkup = renderToStaticMarkup(<RoomIcon style={{color:colorMarker}} />);

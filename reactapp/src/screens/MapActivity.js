@@ -6,8 +6,6 @@ import { Map, Marker, Popup, TileLayer,MapContainer } from "react-leaflet";
 import { Icon } from "leaflet";
 import { FixedSizeList } from 'react-window';
 import ListItem from '@material-ui/core/ListItem';
-// import css
-
 
 
 
@@ -63,7 +61,6 @@ function MapUser(props) {
       setValue(newValue);
     };
 
-
     useEffect(()=>{
       let id="5f86cb003d835c1a2cc317fc"
       async function recupDonnée(){
@@ -74,7 +71,6 @@ function MapUser(props) {
         })
         var adressRaw = await requestBDD.json()
         setListFavoriteAdress(adressRaw.user.contactInt)
-        console.log("recup adress",adressRaw.user.contactInt)
       }
       recupDonnée()
       
@@ -99,16 +95,13 @@ function MapUser(props) {
 useEffect(()=>{
   async function recupDonnée(){
     let adress =  JSON.stringify(props.listAdressParticipant)
-   
-    console.log(adress)
-    var requestBDD = await fetch(`adress/getrdvpoint`,{
+     var requestBDD = await fetch(`adress/getrdvpoint`,{
       method:"POST",
       headers: {'Content-Type':'application/x-www-form-urlencoded'},
       body:`info=${adress}`
     })
 
     var rdvPointRaw = await requestBDD.json()
-    console.log("recup info",rdvPointRaw)
     props.addRdvPoint(rdvPointRaw)
   }
   recupDonnée()
@@ -144,34 +137,46 @@ useEffect(()=>{
         </Tabs>
     </AppBar>
     <TabPanel value={value} index={0}>
-      one
+    <div className={classes.showList}> 
+                <ul className={classes.showListItem}>
+                    { listAdressParticipant.map((item,i)=>{
+                    let adressFull = `${item.adress}, ${item.postcode}, ${item.city}`
+                    //<ListItemComponent key={i} title1={item.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
+
+                    return (
+                        <ListItemComponent key={i} title1={item.name} title2={adressFull}  type="adress" action="isParticipant" screenShow="addParticipantAdress" isFavorite={item.isFavorite} lat={item.lat} lon={item.lon}/>
+                    )
+                
+                })}
+                </ul>
+     </div> 
     </TabPanel>
     <TabPanel value={value} index={1}>
     <div className={classes.showList}> 
-                <ul>
+                <ul className={classes.showListItem}>
                     { listFavoriteAdress.map((item,i)=>{
                     let adressFull = `${item.adress}, ${item.postcode}, ${item.city}`
 
                     //<ListItemComponent key={i} title1={item.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
 
                     return (
-                        <ListItemComponent key={i} title1={item.name} title2={adressFull}  type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.lat} lon={item.lon}/>
+                        <ListItemComponent key={i} title1={item.name} title2={adressFull} adress={item.adress} postcode={item.postcode} city={item.city}  type="adress" action="addFavoriteParticipant" screenShow="addParticipantAdress" isFavorite={true} lat={item.lat} lon={item.lon}/>
                     )
                 
                 })}
                 </ul>
-            </div> 
+     </div> 
     </TabPanel>
     <TabPanel value={value} index={2}>
-    <TextField id="standard-basic" className={classes.inputStyle} label="Rechercher une adresse" onChange={(e)=> setAdressSearch(e.target.value)} />    
+    <TextField id="saisie-new-adress" className={classes.inputStyle} label="Rechercher une adresse" onChange={(e)=> setAdressSearch(e.target.value)} />    
 
             <div className={classes.showList}> 
-                <ul>
+                <ul className={classes.showListItem}>
                     { listAdressResult.map((item,i)=>{
                     let cityWording =`${item.properties.postcode} - ${item.properties.city} `
                     
                     return (
-                        <ListItemComponent key={i} title1={item.properties.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
+                        <ListItemComponent key={i} title1={item.properties.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addNewParticipant" screenShow="addParticipantAdress" isFavorite={false} lat={item.geometry.coordinates[0]} lon={item.geometry.coordinates[1]} />
                     )
                 
                 })}
@@ -277,7 +282,16 @@ const styles = {
     showList:{
         maxHeight:"77vh",
         overflowY: "auto",
+        display:"flex",
+        width:"100%"
         },
+
+    showListItem:{
+      display:"flex",
+      flexDirection:"column",
+      width:"100%",
+      padding:0
+    },
 
     buttonValidate:{
       display:"flex",

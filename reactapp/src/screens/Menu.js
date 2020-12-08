@@ -1,11 +1,12 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Fade from '@material-ui/core/Fade';
+
 import {Divider, withStyles } from '@material-ui/core';
+// navigation
+import { useHistory } from "react-router-dom";
+
 
 
 // import icon
@@ -27,8 +28,16 @@ function MenuApp(props) {
     const { index, classes } = props;
     const [isBooped, setIsBooped] = useState(false);
     backgroundColorTest="red"
-    console.log(isBooped)
+    //console.log(isBooped)
     const [isShown, setIsShown] = useState(false);
+    let history = useHistory();
+
+    let navigation =(url)=>{
+    
+      history.push(`/${url}`);
+    
+    }
+
 
 
     let MenuNavigation = ()=>{
@@ -38,9 +47,9 @@ function MenuApp(props) {
             <div className={classes.allLabel}>
                <p className={classes.wording}> <MenuIcon className={classes.iconStyle} /> Menu</p>
                 <Divider className={classes.dividerClass} />
-                <Button className={classes.buttonStyle}> <p className={classes.wording}> <HomeIcon className={classes.iconStyle} /> Trouver une activité </p></Button> 
-                <Button className={classes.buttonStyle}> <p className={classes.wording}> <PersonIcon className={classes.iconStyle}  /> Vos Contacts </p></Button> 
-                <Button className={classes.buttonStyle}> <p className={classes.wording}> <RestaurantMenuIcon className={classes.iconStyle} /> Vos adresses </p></Button> 
+                <Button className={classes.buttonStyle}> <p className={classes.wording} onClick={()=>navigation("mapactivity")}> <HomeIcon className={classes.iconStyle} /> Trouver une activité </p></Button> 
+                <Button className={classes.buttonStyle}> <p className={classes.wording} onClick={()=>navigation("contactlist")}> <PersonIcon className={classes.iconStyle}  /> Vos Contacts </p></Button> 
+                <Button className={classes.buttonStyle}> <p className={classes.wording}> <RestaurantMenuIcon className={classes.iconStyle} /> Vos activités </p></Button> 
                 
                 <Divider className={classes.dividerClass}/>
                 <Button className={classes.buttonStyle}><p className={classes.wording}> <ExitToAppIcon className={classes.iconStyle}  /> Déconnexion </p></Button> 
@@ -88,12 +97,14 @@ const styles = {
       paddingLeft:"15px", 
       paddingRight:"15px", 
       width:50,
-      '&:hover': {
+      height:"100vh" ,
+        '&:hover': {
         borderColor: '#0062cc',
         boxShadow: 'none',
         color:"black",
         width:"20%",
-       
+        transform: { rotate: "45deg" }
+      
       },
     },
 
@@ -116,7 +127,12 @@ const styles = {
      paddingRight:"15px"
     },
     iconStyle:{
-        marginRight:"15px"
+        marginRight:"15px",
+        '&:hover': {
+          color:"red",
+      
+         transform: {rotate:"45deg",}
+        },
     },
     dividerClass:{
         backgroundColor:"#80d6ff",

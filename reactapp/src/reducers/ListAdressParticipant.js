@@ -35,13 +35,31 @@ export default function(listAdress = [], action) {
             postcode:action.info.postcode,
             lat:action.info.lat,
             lon:action.info.lon,
+            isFavorite:false,
+          }
+          newList.push(newAdress)
+          
+          return newList
+        }
+        else if(action.type == 'addFavParticipantAdress') {
+    
+          let newList = [...listAdress]
+          let nbAdress = newList.length +1
+    
+          let newAdress ={ 
+            id:nbAdress,
+            name:action.info.title1,
+            adress:action.info.adress,
+            city:action.info.city,
+            postcode:action.info.postcode,
+            lat:action.info.lat,
+            lon:action.info.lon,
             isFavorite:true,
           }
           newList.push(newAdress)
           
           return newList
         }
-    
         
         else if (action.type == 'deleteAdressParticipant'){
           let newList = [...listAdress]

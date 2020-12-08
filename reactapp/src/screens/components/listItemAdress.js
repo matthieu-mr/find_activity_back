@@ -12,41 +12,65 @@ import Grid from '@material-ui/core/Grid';
 import Divider from '@material-ui/core/Divider';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import Button from '@material-ui/core/Button';
-
+import StarIcon from '@material-ui/icons/Star';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
 // import css
 
 
 function ListItemAdress(props) {
     const { classes } = props;
 
-let addAdress=()=>{
+   // let colorAddButton = "#42a5f5"
+    let colorAddButton = "red"
+    let iconIsFavorite
 
+
+    switch (props.isFavorite) {
+      case false:
+        colorAddButton = "green"
+        iconIsFavorite = <StarBorderIcon  style={{ color:colorAddButton,marginRight:15}}/>
+
+        break;
+        case true:
+          colorAddButton = "#42a5f5"
+          iconIsFavorite = <StarIcon  style={{ color:colorAddButton,marginRight:15}}/>
+
+        break;
+      default:
+        colorAddButton = "red"
+    }
+
+
+
+let addNewAdressToListParticipant=()=>{
   switch (props.action) {
-    case 'addParticipant':
-      props.addParticipantList(props)
+    case 'addFavoriteParticipant':
+      console.log("recup bouton add",props)
+      props.addFavParticipantList(props)
       break;
 
-
+      case 'addNewParticipant':
+        props.addNewParticipantList(props)
+        break;  
     default:
-      console.log(`autre action ${props.action}.`);
+      console.log("aucune action sur bouton")
   }
-
-
 }
-
-console.log(props.action)
 
   return (
 
 <div className={classes.containerList} > 
-    <Button onClick={()=>addAdress()} className={classes.button}> 
+    <Button onClick={()=>addNewAdressToListParticipant()} className={classes.button}> 
             <List className={classes.listItem}>
+ 
                 <ListItem className={classes.listItem}>
+                {iconIsFavorite}
+
                   <ListItemText
                     primary={props.title1}
                     secondary={props.title2}
                   />
-                      <AddCircleOutlineIcon style={{ color:"#42a5f5"}} />
+                  <AddCircleOutlineIcon style={{ color:colorAddButton}} />
                 </ListItem>
                 <Divider />
             </List>
@@ -69,7 +93,7 @@ const styles = {
     listItem:{
         display:"flex",
         flex:1, 
-
+        marginLeft:5
     },
     };
 
@@ -86,9 +110,12 @@ const styles = {
 
     function mapDispatchToProps(dispatch) {
         return {
-            addParticipantList: function(info) {
+            addNewParticipantList: function(info) {
                 dispatch( {type: 'addNewParticipantAdress',info:info} )
                 },
+            addFavParticipantList: function(info) {
+              dispatch( {type: 'addFavParticipantAdress',info:info} )
+              },
         }
       }
       
