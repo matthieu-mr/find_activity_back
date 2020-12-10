@@ -40,30 +40,29 @@ console.log(req.body)
 var pseudo = req.body.pseudo
 var email = req.body.email
 var password = req.body.password
-
 var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
 
 if (user == null){
 // no user and pseudo
-var salt = uid2(32);
-SHA256(password + salt).toString(encBase64);
+  var salt = uid2(32);
+  SHA256(password + salt).toString(encBase64);
 
 var newUser = new UserModel ({
-pseudo: req.body.pseudo,
-email:req.body.email,
-salt : salt,
-password: SHA256(password + salt).toString(encBase64),
-token: uid2(32),
-contactInt:[],
-favoritesplaces:[],
-trackingID:"33D",
-adress: "", 
-postcode:"",
-city:"",
-lat:"", 
-lon:"", 
-});
+    pseudo: req.body.pseudo,
+    email:req.body.email,
+    salt : salt,
+    password: SHA256(password + salt).toString(encBase64),
+    token: uid2(32),
+    contactInt:[],
+    favoritesplaces:[],
+    trackingID:"33D",
+    adress: "", 
+    postcode:"",
+    city:"",
+    lat:"", 
+    lon:"", 
+  });
 await newUser.save();
 
 res.json({ created: true });
@@ -98,17 +97,16 @@ if (user == null){
 // no user and pseudo
 let retour = "Utilisateur inconnu "
 res.json({ login: false,userKnow:false,retour });
-}else {
+  }else {
 // user exist
 var hash = SHA256(password + user.salt).toString(encBase64);  
-if (hash === user.password) {
-let retour = true
-res.json({ login: true,userKnow:true, retour,user });
-
-} else {
-let retour = "Mauvais password"
-res.json({ login: false,userKnow:true,retour });
-}
+  if (hash === user.password) {
+    let retour = true
+    res.json({ login: true,userKnow:true, retour,user });
+  } else {
+    let retour = "Mauvais password"
+    res.json({ login: false,userKnow:true,retour });
+  }
 }
 
 });
@@ -198,48 +196,42 @@ var pseudo = ""
 var email = req.body.email
 //email="m.michon.rossel@gmail.com"
 
-console.log(recupInfo)
-
-
-
 let item = {
-name : recupInfo.name,
-adress:recupInfo.adress,
-postcode:recupInfo.postcode,
-city:recupInfo.city,
-lat:recupInfo.lat,
-lon:recupInfo.lon,
-isFavorite:true,
-icon:recupInfo.icon,
-googleIdPlace:recupInfo.googleIdPlace
-}
-console.log(item)
+  name : recupInfo.name,
+  adress:recupInfo.adress,
+  postcode:recupInfo.postcode,
+  city:recupInfo.city,
+  lat:recupInfo.lat,
+  lon:recupInfo.lon,
+  isFavorite:true,
+  icon:recupInfo.icon,
+  googleIdPlace:recupInfo.googleIdPlace
+  }
 
 
 var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-//console.log("info",user.contactInt)
+
 
 if (req.body.type=="contact"){ 
-let listAdress =  user.contactInt
-listAdress.push(item)
+  let listAdress =  user.contactInt
+  listAdress.push(item)
 
 await UserModel.updateOne(
-{email: email},
-{contactInt: listAdress}
-);
+    {email: email},
+    {contactInt: listAdress}
+  );
 
 }else{
-let listAdress =  user.favoritesplaces
-listAdress.push(item)
+  let listAdress =  user.favoritesplaces
+  listAdress.push(item)
 
-await UserModel.updateOne(
-{email: email},
-{ favoritesplaces: listAdress}
-);
+  await UserModel.updateOne(
+    {email: email},
+    { favoritesplaces: listAdress}
+  );
 }
 
-console.log(user)
-res.json( {user} );
+  res.json( {user} );
 });
 
 
@@ -249,10 +241,10 @@ var pseudo = ""
 var email = req.body.email
 var objectid = req.body.objectid
 var type =req.body.type
+var id = req.body.id
+//email = "m.michon.rossel@gmail.com"
 
-console.log("recup info from front ",req.body)
-
-var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
+var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo},{_id:id}] });
 
 if(type == "contact"){
   user.contactInt.map((item,i)=>{

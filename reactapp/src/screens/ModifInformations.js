@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import { useForm } from "react-hook-form";
@@ -8,24 +8,24 @@ import { withStyles,Divider,Card,CardContent,Button, Typography,Grid,TextField} 
 import MenuApp from './Menu'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import EditIcon from '@material-ui/icons/Edit';
+// import component
+import ListItemComponent from './components/listItemAdress'
 var backgroundColorTest = "#0077c2"
 
 
 function ModifInformation(props) {
     const { index, classes } = props;
-
    
     const { register, handleSubmit, watch, errors } = useForm();
-    const onSubmit = data => console.log("recup infotation",data);
+    const onSubmit = data => console.log("recup data",data);
     const [showSearchAdress,setShowSearchAdress]=useState(false)
-    const [searchAdress,setSearchAdress]=useState('')
+    const [adressSearch,setAdressSearch]=useState('')
+    const [listAdressResult,setListAdressResult]= useState([])
 
 
+    const [labelName,setLabelName]=useState("name")
+    const [labelAdress,setLabelAdress]=useState("adress")
 
-    console.log(searchAdress)
-
-    let formatAdress = `${props.information.postcode}, ${props.information.city}`
-    
 
     let Validate =()=>{
         console.log("validate")
@@ -36,20 +36,60 @@ function ModifInformation(props) {
     }
 
 
+    useEffect(()=>{
+        async function recupDonnée(){
+            var requestBDD = await fetch('adress/coords', {
+                method: 'POST',
+                headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                body: `adress=${adressSearch}`
+              });
+              var listAdressBdd = await requestBDD.json()
+              setListAdressResult(listAdressBdd)
+        }
+        recupDonnée()
+
+    },[adressSearch])     
+
+    let getTheAdress =(wording)=>{
+        setLabelAdress(wording)
+        setShowSearchAdress(!showSearchAdress)
+    }
+
+
+
     let CardResultAdress =()=>{
         if(showSearchAdress){
             return (
-                <Card >
-    
+            <Card >
                 <CardContent>
-                    <p> hello</p>
+                { listAdressResult.map((item,i)=>{
+                    let cityWording =`${item.properties.postcode} - ${item.properties.city} `
+                    
+                    return (
+                        <span  onClick={()=>{getTheAdress(cityWording)}} >
+                        <ListItemComponent key={i} 
+                            title1={item.properties.name} 
+                            title2={cityWording} 
+                            postcode={item.properties.postcode} 
+                            city={item.properties.city} 
+                            type="adress" 
+                            action="addNewParticipant" 
+                            screenShow="addParticipantAdress" 
+                            isFavorite={false} 
+                            lat={item.geometry.coordinates[0]} 
+                            lon={item.geometry.coordinates[1]} 
+                        />
+                        </span>
+                    )
+                
+                })}
                 </CardContent>
             </Card>
             )
         }
         return(<p></p>)
-
     }
+
 
   return (
     <div className={classes.body}> 
@@ -61,18 +101,20 @@ function ModifInformation(props) {
         alignItems="stetch"
             >
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+<form onSubmit={handleSubmit(onSubmit)}>
 
 
         <Card className={classes.oneCard}>
 
         <CardContent>
-        <TextField id="standard-basic" label={props.information.name}  name="name" inputRef={register} className={classes.inputName}/>
+        <TextField id="standard-basic" label={labelName}  name="adressname2" inputRef={register} className={classes.inputName}/>
      
-         <Divider className={classes.dividerClass}/>
+            <Divider className={classes.dividerClass}/>
 
-         <TextField id="standard-basic" label={formatAdress}  name="adressname2" inputRef={register} className={classes.inputName} />
-         <TextField id="standard-basic" label={formatAdress}  name="adressname2" inputRef={register} className={classes.inputName} />
+            <TextField id="standard-basic" label={labelAdress}  name="adressname3" inputRef={register} className={classes.inputName}
+            onClick={()=>{setShowSearchAdress(!showSearchAdress)}}
+            onChange={(e)=>{setAdressSearch(e.target.value)}}
+            />
 
         </CardContent>
 
@@ -95,13 +137,14 @@ function ModifInformation(props) {
             </Button>
         </Grid>
     </Card>
-
     </form>
 
-    <CardResultAdress/>
+    <CardResultAdress />
 
         </Grid>
       
+  
+
         </div>
 
   );
@@ -120,14 +163,6 @@ const styles = {
         display:"flex",
         flex:1,
       },
-      oneCard:{
-        borderRadius:15,
-        alignSelf:"center",
-        marginTop:"20px",
-        width:"50%",
-      },
-      inputName:{
-      }
     
 
 };

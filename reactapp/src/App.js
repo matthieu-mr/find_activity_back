@@ -9,7 +9,7 @@ import MapActivity from './screens/MapActivity'
 import Home from './screens/Home'
 import Password from './screens/NewPassword'
 import ContactScreen from './screens/ContactList'
-
+import modifInformationScreen from './screens/ModifInformations'
 
 
 // import redux 
@@ -20,7 +20,7 @@ import {Provider} from 'react-redux';
 import userInformation from './reducers/UserInformation'
 import listAdressParticipant from './reducers/ListAdressParticipant'
 import rdvPointAdress from './reducers/RdvPointAdress'
-
+import ModifInformation from './reducers/ModifInformation'
 
 
 
@@ -28,7 +28,7 @@ import rdvPointAdress from './reducers/RdvPointAdress'
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme';
 
-const store = createStore(combineReducers({userInformation,listAdressParticipant,rdvPointAdress}))
+const store = createStore(combineReducers({userInformation,listAdressParticipant,rdvPointAdress,ModifInformation}))
 
 
 function App() {
@@ -41,6 +41,7 @@ function App() {
       <Route path="/newpassword:id" component={Password} />
       <Route path="/mapactivity" component={MapActivity} />
       <Route path="/contactlist" component={ContactScreen} />
+      <Route path="/modification-informations" component={modifInformationScreen} />
 
     </Switch>
   </Router>

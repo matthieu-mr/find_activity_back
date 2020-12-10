@@ -1,19 +1,4 @@
 
-// ajout des variables 
-let width =1280
-let height = 800
-
-let inViewPort =function(items){
-  expect:(items[0].getBoundClientRect().left).to.bet.greaterThan(0) // debut taille ecran
-  expect:(items[0].getBoundClientRect().left).to.bet.lessThan(width) // fin taille ecraqn
-
-}
-
-
-
-
-
-
 
 describe('My First Test', () => {
     it('Does not do much!', () => {

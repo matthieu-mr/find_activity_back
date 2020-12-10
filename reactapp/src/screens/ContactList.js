@@ -2,26 +2,42 @@
 import React, { useState,useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import { useHistory } from "react-router-dom";
 
 // import css
-import { withStyles } from '@material-ui/core';
-import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import { withStyles,Divider,Card,CardContent,Button, Typography,Grid} from '@material-ui/core';
+
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import EditIcon from '@material-ui/icons/Edit';
 // import component 
 import MenuApp from './Menu'
+
 
 
 function ContactList(props) {
   const { index, classes } = props;
   const [listFavoriteAdress,setListFavoriteAdress]=useState([])
+  let history = useHistory();
+  console.log(props)
+
+  //let id=props.id
+  let id="5f86cb003d835c1a2cc317fc"
+
+
+  let editAdress=(item)=>{
+    props.sendToModif(item)
+    console.log(item)
+    history.push(`/modification-informations`);
+  }
+
+  let deleteAdress=(objectId)=>{
+    let id="5f86cb003d835c1a2cc317fc"
+    let type="contact"
+    console.log("delete",id,type,objectId)
+  }
 
   useEffect(()=>{
-    let id="5f86cb003d835c1a2cc317fc"
+ 
     async function recupDonnée(){
       var requestBDD = await fetch(`users/userinformation`,{
         method:"POST",
@@ -40,41 +56,59 @@ function ContactList(props) {
 return (
   <div className={classes.body}> 
   <MenuApp />
+  <Grid
+  container
+  direction="column"
+  justify="flex-start"
+  alignItems="stetch"
+        >
+
+    <Typography  variant="h1" component="h1"  id="name-contact" className={classes.title}>
+      Vos Contacts
+    </Typography>
+
+ 
+    { listFavoriteAdress.map((item,i)=>{
+      return (
+    <Card className={classes.oneCard}>
+
+          <CardContent>
+            <Typography  variant="h2" component="h2"  id="name-contact">
+              {item.name}
+              <Divider className={classes.dividerClass}/>
+
+            </Typography>
+            <Typography variant="h3" component="h3" className={classes.adress}>
+                {item.adress}
+            </Typography>
+            <Typography variant="h3" component="h3" className={classes.adress}>            
+                {item.postcode}, {item.city}
+            </Typography>
+          </CardContent>
+        
+        <Divider className={classes.dividerClass}/>
+          <Grid
+            container
+            direction="row"
+            justify="space-evenly"
+            alignItems="center"
+            className={classes.buttonGroup}
+          >
+            <Button size="small" variant="contained" color="secondary" id="modif-contact" onClick={()=>editAdress(item)}>
+            < EditIcon />
+              Modifier
+            </Button>
+            <Button size="small"  variant="contained" color="error" id="delete-contact"  className={classes.buttonAlert} onClick={()=>deleteAdress(item._id)}>
+              <DeleteForeverIcon />
+              Supprimer
+            </Button>
+          </Grid>
+      </Card>
+      )
+    })}
 
 
-  <div className={classes.allCardsBody}>
-  { listFavoriteAdress.map((item,i)=>{
-    return (
-  <Card className={classes.oneCard}>
-      <CardActionArea>
-        <CardMedia
-          className={classes.media}
-          image="/static/images/cards/contemplative-reptile.jpg"
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {item.name}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-        <Button size="small" color="secondary">
-          Modifier
-        </Button>
-        <Button size="small" color="secondary">
-          Learn More
-        </Button>
-      </CardActions>
-    </Card>
-    )
-  })}
-  </div> 
-
+</Grid>
 
 
 </div>
@@ -89,22 +123,32 @@ const styles = {
     flex:1, 
     
   },
-
-  allCardsBody:{
+  title:{
     display:"flex",
-    flexDirection:"column",
-    flex:2, 
-    alignSelf:"flex-start",
-    justifyContent:"center",
-    marginTop:15,
+    alignItems:"center",
+    marginTop:15, 
+    alignSelf:"center"
   },
+
   oneCard:{
     borderRadius:15,
     alignSelf:"center",
     marginTop:"20px",
     width:"50%",
   },
-
+  adress:{
+    marginTop:15
+  },
+  buttonGroup:{
+    padding:15,
+  },
+  buttonAlert:{
+    color:"white",
+    backgroundColor:'#c62828',
+    '&:hover': {
+      backgroundColor:  "#8e0000",
+    },
+  },
     };
 
     
@@ -115,8 +159,8 @@ const styles = {
 
     function mapDispatchToProps(dispatch) {
         return {
-          addInfoUser: function(info) { 
-            dispatch( {type: 'informationUser'}) 
+          sendToModif: function(info) { 
+            dispatch( {type: 'modifContact',info}) 
           },
         }
       }

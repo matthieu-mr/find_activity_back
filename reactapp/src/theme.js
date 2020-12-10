@@ -17,6 +17,30 @@ const theme = createMuiTheme({
         contrastText: '#fff',
         backgroundColor:"#9fa8da"
       },
+      warning:{
+        light: "#ff5f52",
+        main: '#c62828',
+        dark:  "#8e0000",
+        contrastText: '#fff',
+        backgroundColor:"#c62828"
+      },
+    },
+    typography: {
+      h1: {
+        color: '#0077c2',
+        fontSize: 50,
+        fontFamily:"Roboto"
+      },
+      h2: {
+        color: '#0077c2',
+        fontSize: 40,
+        fontFamily:"Roboto"
+      },
+      h3: {
+        color: '#62757f',
+        fontSize: 15,
+      },
+
     },
   });
   
