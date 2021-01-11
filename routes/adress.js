@@ -137,14 +137,15 @@ res.json(finalAdress);
 
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
-
+  // Get lat & long from front
   let lon = req.body.lon
   let lat = req.body.lat
   
-    // Liste des activités hors licence etc ...
+    // send request
     var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lon}&lat=${lat}`)
     var response = JSON.parse(list.getBody())
-  
+
+    // send adress wording & all data
     let name = response.features[0].properties.name
     let postCode = response.features[0].properties.postcode
     let city =response.features[0].properties.city

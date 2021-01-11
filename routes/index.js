@@ -247,16 +247,19 @@ router.post('/sport',async function(req, res, next) {
 
 
 //recherche des adresses
-router.post('/adressesList',async function(req, res, next) {
+router.post('/adresseslist',async function(req, res, next) {
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let adress =req.body.adress
+
+  // modify space -> +
   let adressModif = adress.replace(/ /g, '+');
 
-  // Liste des activités hors licence etc ...
+  // send request
   var list = request('GET', `https://api-adresse.data.gouv.fr/search/?q=${adressModif}&limit=15`)
   var response = JSON.parse(list.getBody())
-
+  // get what is instersting
   var result = response.features
+
   res.json({result});
 });
 
@@ -264,20 +267,23 @@ router.post('/adressesList',async function(req, res, next) {
 //recherche des adresses via lat & long
 router.post('/adressesListCoord',async function(req, res, next) {
 
+  // get lat & lon from front
+
 let lonCon = req.body.long
 let latCon = req.body.lat
 
-  // Liste des activités hors licence etc ...
+  // send request
 
   var list = request('GET', `https://api-adresse.data.gouv.fr/reverse/?lon=${lonCon}&lat=${latCon}`)
   var response = JSON.parse(list.getBody())
 
-
+  // create wording from result
   let name = response.features[0].properties.name
   let postCode = response.features[0].properties.postcode
   let city =response.features[0].properties.city
   let adress = name + ','+ postCode + ','+city
 
+  // return result 
   res.json({adress});
 });
 

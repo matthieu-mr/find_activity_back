@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var favoritesPlacesSchema = mongoose.Schema({
+    var favoritesPlacesSchema = mongoose.Schema({
         date : Date,
         name:String,
         category:String,

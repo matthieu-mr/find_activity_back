@@ -10,12 +10,12 @@ import ListItem from '@material-ui/core/ListItem';
 
 
 // import icon
-import SportsBasketballIcon from '@material-ui/icons/SportsBasketball';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import PersonIcon from '@material-ui/icons/Person';
 import SendIcon from '@material-ui/icons/Send';
 import '../App.css'
 // import css
 import { Button,Card,Typography,TextField,AppBar,Tabs,Tab,Box,withStyles } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 //import {Link} from 'react-router-dom';
 
 // import component 
@@ -49,7 +49,7 @@ function TabPanel(props) {
 
 
 
-function MapActivity(props) {
+function MapUser(props) {
     const { index, classes } = props;
     const [listAdressResult,setListAdressResult] = useState([])
 
@@ -77,6 +77,40 @@ function MapActivity(props) {
     },[])
 
 
+    useEffect(()=>{
+        async function recupDonnée(){
+            var requestBDD = await fetch('adress/coords', {
+                method: 'POST',
+                headers: {'Content-Type':'application/x-www-form-urlencoded'},
+                body: `adress=${adressSearch}`
+              });
+              var listAdressBdd = await requestBDD.json()
+              setListAdressResult(listAdressBdd)
+        }
+        recupDonnée()
+
+    },[adressSearch])     
+
+
+useEffect(()=>{
+  async function recupDonnée(){
+    let adress =  JSON.stringify(props.listAdressParticipant)
+     var requestBDD = await fetch(`adress/getrdvpoint`,{
+      method:"POST",
+      headers: {'Content-Type':'application/x-www-form-urlencoded'},
+      body:`info=${adress}`
+    })
+
+    var rdvPointRaw = await requestBDD.json()
+    props.addRdvPoint(rdvPointRaw)
+  }
+  recupDonnée()
+  
+  setListAdressParticipant(props.listAdressParticipant)
+},[props.listAdressParticipant]) 
+
+
+
   return (
 <div className={classes.body}> 
   <MenuApp />
@@ -94,21 +128,60 @@ function MapActivity(props) {
             scrollButtons="auto"
             aria-label="scrollable auto tabs example"
             className={classes.tabHeader}
-            centered
           >
-            <Tab label="Sports"  className={classes.tabStyle} />
-            <Tab label="Sorties" className={classes.tabStyle}  />
 
+            <Tab label="Participants"  />
+            <Tab label="Vos Contacts"  />
+            <Tab label="Ajout Adresse"/>
+            <Tab label="Votre position"/>
         </Tabs>
     </AppBar>
     <TabPanel value={value} index={0}>
+    <div className={classes.showList}> 
+                <ul className={classes.showListItem}>
+                    { listAdressParticipant.map((item,i)=>{
+                    let adressFull = `${item.adress}, ${item.postcode}, ${item.city}`
+                    //<ListItemComponent key={i} title1={item.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
 
+                    return (
+                        <ListItemComponent key={i} title1={item.name} title2={adressFull}  type="adress" action="isParticipant" screenShow="addParticipantAdress" isFavorite={item.isFavorite} lat={item.lat} lon={item.lon}/>
+                    )
+                
+                })}
+                </ul>
+     </div> 
     </TabPanel>
     <TabPanel value={value} index={1}>
+    <div className={classes.showList}> 
+                <ul className={classes.showListItem}>
+                    { listFavoriteAdress.map((item,i)=>{
+                    let adressFull = `${item.adress}, ${item.postcode}, ${item.city}`
 
+                    //<ListItemComponent key={i} title1={item.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addParticipant" screenShow="addParticipantAdress" lat={item.geometry.coordinates[1]} lon={item.geometry.coordinates[0]} />
+
+                    return (
+                        <ListItemComponent key={i} title1={item.name} title2={adressFull} adress={item.adress} postcode={item.postcode} city={item.city}  type="adress" action="addFavoriteParticipant" screenShow="addParticipantAdress" isFavorite={true} lat={item.lat} lon={item.lon}/>
+                    )
+                
+                })}
+                </ul>
+     </div> 
     </TabPanel>
     <TabPanel value={value} index={2}>
- 
+    <TextField id="saisie-new-adress" className={classes.inputStyle} label="Rechercher une adresse" onChange={(e)=> setAdressSearch(e.target.value)} />    
+
+            <div className={classes.showList}> 
+                <ul className={classes.showListItem}>
+                    { listAdressResult.map((item,i)=>{
+                    let cityWording =`${item.properties.postcode} - ${item.properties.city} `
+                    
+                    return (
+                        <ListItemComponent key={i} title1={item.properties.name} title2={cityWording} postcode={item.properties.postcode} city={item.properties.city} type="adress" action="addNewParticipant" screenShow="addParticipantAdress" isFavorite={false} lat={item.geometry.coordinates[0]} lon={item.geometry.coordinates[1]} />
+                    )
+                
+                })}
+                </ul>
+            </div>    
       </TabPanel>
     <TabPanel value={value} index={3}>
         Item 4
@@ -117,7 +190,7 @@ function MapActivity(props) {
 
     <div className={classes.buttonValidate} >  
       <Button variant="contained" color="secondary">
-        Valider l'activité    <SendIcon  className={classes.iconSend}/>
+        Valider participants    <SendIcon  className={classes.iconSend}/>
       </Button>
     </div>
 
@@ -190,8 +263,6 @@ const styles = {
     },
     tabHeader:{
       backgroundColor: "#0077c2",
-      display:"flex",
-      alignItems:"center",
       '&$selected': {
         color: '#1890ff',
         backgroundColor: "red",
@@ -200,11 +271,6 @@ const styles = {
         color: '#40a9ff',
       },
     },
-    tabStyle:{
-      width:"50%",
-    },
-
-
     cardAllContent:{
         display:"flex",
         flexDirection:"column",
@@ -251,7 +317,7 @@ const styles = {
 
 
     
-    MapActivity.propTypes = {
+    MapUser.propTypes = {
       index: PropTypes.number.isRequired,
       classes: PropTypes.object.isRequired,
     };
@@ -275,5 +341,5 @@ const styles = {
     export default connect(
         mapStateToProps, 
           mapDispatchToProps
-      )( withStyles(styles)(MapActivity));
+      )( withStyles(styles)(MapUser));
           

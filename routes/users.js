@@ -36,51 +36,49 @@ res.send('route user');
 /* GET users listing. */
 router.post('/createuser',async function(req, res, next) {
 
-console.log(req.body)
-var pseudo = req.body.pseudo
-var email = req.body.email
-var password = req.body.password
-var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
-
+  // get info from front
+  var pseudo = req.body.pseudo
+  var email = req.body.email
+  var password = req.body.password
+  // get info from BDD
+  var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
 if (user == null){
 // no user and pseudo
+var token =uid2(32);
+
+// create salt & SHA
   var salt = uid2(32);
   SHA256(password + salt).toString(encBase64);
 
-var newUser = new UserModel ({
-    pseudo: req.body.pseudo,
-    email:req.body.email,
-    salt : salt,
-    password: SHA256(password + salt).toString(encBase64),
-    token: uid2(32),
-    contactInt:[],
-    favoritesplaces:[],
-    trackingID:"33D",
-    adress: "", 
-    postcode:"",
-    city:"",
-    lat:"", 
-    lon:"", 
-  });
-await newUser.save();
+// get user info from query & add more
+    var newUser = new UserModel ({
+        pseudo: req.body.pseudo,
+        email:req.body.email,
+        salt : salt,
+        password: SHA256(password + salt).toString(encBase64),
+        token: token,
+        contactInt:[],
+        favoritesplaces:[],
+        trackingID:"33D",
+        adress: "", 
+        postcode:"",
+        city:"",
+        lat:"", 
+        lon:"", 
+      });
 
-res.json({ created: true });
-}else {
-// user exist
-var hash = SHA256(password + user.salt).toString(encBase64);
-
-if (hash === user.password) {
-let retour = "Email ou pseudo déjà utilisé, reintialiser mot de passe ? "
-res.json({ login: false, retour });
-
-} else {
-let retour = "Email ou pseudo déjà utilisé, reintialiser mot de passe ? "
-res.json({ login: false,retour });
-}
-}
-// res.json('respond with a resource');
+  await newUser.save();
+  res.json({ created: true,token:token});
+  }else {
+    // user already exist
+    let retour = "Email ou pseudo déjà utilisé, reintialiser mot de passe ? "
+    res.json({ login: false, retour });
+    }
 });
+
+
+
 
 /* GET users listing. */
 router.post('/login',async function(req, res, next) {

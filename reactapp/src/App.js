@@ -6,6 +6,8 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 // import screen
 import MapActivity from './screens/MapActivity'
+import MapUser from './screens/MapUser'
+ 
 import Home from './screens/Home'
 import Password from './screens/NewPassword'
 import ContactScreen from './screens/ContactList'
@@ -40,6 +42,7 @@ function App() {
       <Route path="/" exact component={Home} />
       <Route path="/newpassword:id" component={Password} />
       <Route path="/mapactivity" component={MapActivity} />
+      <Route path="/mapuser" component={MapUser} />
       <Route path="/contactlist" component={ContactScreen} />
       <Route path="/modification-informations" component={modifInformationScreen} />
 

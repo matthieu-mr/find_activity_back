@@ -7,7 +7,6 @@
     "heroku-postbuild": "cd reactapp && npm install && npm run build"
   },
   "dependencies": {
-    "@mailchimp/mailchimp_marketing": "^3.0.21",
     "cookie-parser": "~1.4.4",
     "crypto-js": "^4.0.0",
     "debug": "~2.6.9",
