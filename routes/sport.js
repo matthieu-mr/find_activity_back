@@ -6,7 +6,7 @@ var request = require('sync-request');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   // Create or update a user in Mixpanel
-  mixpanelEvent()
+ // mixpanelEvent()
 
 /*
 mixpanel.people.set('13793', {
@@ -17,7 +17,7 @@ mixpanel.people.set('13793', {
 });
 
 */
-  res.render('index', { title: 'hello' });
+  res.render('index', { title: 'hello-sport routes' });
 });
 
 // 48.7926622, 2.5134926,5000
@@ -27,13 +27,7 @@ mixpanel.people.set('13793', {
 
 router.post('/filteredtype',async function(req, res, next) {
 
-/*
-Request all
-https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&facet=naturelibelle&facet=actlib&exclude.utilisateurs=Scolaires+%2F+Universit%C3%A9s&geofilter.distance=48.7926622%2C+2.5134926%2C5000
-Request typr 
-https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equipements-sportifs&q=&rows=1000&facet=naturelibelle&facet=actlib&refine.naturelibelle=D%C3%A9couvert&exclude.utilisateurs=Scolaires+%2F+Universit%C3%A9s&geofilter.distance=48.7926622%2C+2.5134926%2C5000
 
-*/
 
   //Un point WGS84 et une distance en mètres pour le géopositionnement
   let lat = req.body.lat
@@ -41,11 +35,12 @@ https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equi
   let dist = req.body.dist
   let type = req.body.type
   dist = 2500
-  /*
+    /*
+    // Hard data 
     lat = 48.7927087
     lon = 2.5133559
     type ="Toutes"
-*/
+    */
    
   let natureJoin = type.replace(/ /g, "+")
   let natureActivite = encodeURI(natureJoin);
@@ -71,8 +66,8 @@ https://data.iledefrance.fr/api/records/1.0/search/?dataset=recensement-des-equi
   }
 
   let arrayTypeActivity = resultTypeActivity
-
   
+  // Add the "all" categrory
   arrayTypeActivity.unshift({ 
     "path": "Toutes",
     "state": "false",
@@ -90,8 +85,6 @@ resultSport.sort(function(a,b){
       return 1;
 });
 
-
-
 res.json({arrayTypeActivity,resultSport});
 });
 
@@ -106,22 +99,20 @@ router.post('/mapactivity',async function(req, res, next) {
    let distance = Number(req.body.dist)
    let sport = req.body.type
    let typeActivity = "Toutes"
-   distance = 2500
- /*
+   distance = 5000
+  /*
    latitude = 48.7926622
    longitude =  2.5134926
-    
-    sport = "Tennis"
-    typeActivity = "Toutes"
- 
- */
+  sport = "Pétanque et jeu provencal"
+  */
  
    let sportJoin = sport.replace(/ /g, "+")
    let sportActivite = encodeURI(sportJoin);
  
-   let natureJoin = typeActivity.replace(/ /g, "+")
+   /* useless for the moment
+  let natureJoin = typeActivity.replace(/ /g, "+")
    let natureActivite = encodeURI(natureJoin);
- 
+  */
  
    var result 
  
@@ -138,26 +129,35 @@ router.post('/mapactivity',async function(req, res, next) {
    }
  
    let arrayResult = []
-   
-   let mefInformation = result.map((item,i)=>{
-        let adress=item.fields.insnovoie+" "+ item.fields.inslibellevoie+","+item.fields.comlib
+   // change JSON form of result
+    result.map((item,i)=>{
+        let adress=item.fields.inslibellevoie+","+item.fields.comlib
         let nature_libelle = [item.fields.naturelibelle]
-
         let issimilare = true
 
-        let arrayResultmap = arrayResult.map((search)=>{
-          if(search.place_id_sport ==item.fields.insnumeroinstall ){
+        // check if have a num on his adress
+        if(item.fields.insnovoie){
+          adress=item.fields.insnovoie+" "+ item.fields.inslibellevoie+","+item.fields.comlib
+        }
+
+      // check if already in result addthe new type of installation
+      arrayResult.map((search)=>{
+          if(search.place_id_sport == item.fields.insnumeroinstall){
             issimilare = !issimilare
             search.nature_libelle.push(item.fields.naturelibelle)
+
           }
         })
 
+
+        // if not in result
         if(issimilare){
           let itemInfo = {
             name:item.fields.insnom,
             lat:item.fields.gps[0],
             lon:item.fields.gps[1],
             place_id:false,
+            dist:item.fields.dist,
             typeActivity:item.famille,
             place_id_sport:item.fields.insnumeroinstall,
             nature_libelle:nature_libelle,
@@ -168,21 +168,17 @@ router.post('/mapactivity',async function(req, res, next) {
         }
         arrayResult.push(itemInfo)
         }
-
-   
        })
 
+       // delete duplicate type of installation
+       arrayResult.map((item,i)=>{
+        let uniqValue = new Set(item.nature_libelle)
+        const arrayValue = [...uniqValue]
+        item.nature_libelle = arrayValue
+        })
 
-arrayResult.map((item,i)=>{
-  let uniqValue = new Set(item.nature_libelle)
-  const arrayValue = [...uniqValue]
-  item.nature_libelle = arrayValue
-  })
-          
-  let nextPage = false
- 
-   res.json({arrayResult,result});
- });
+        res.json({result,arrayResult});
+      });
 
 
 

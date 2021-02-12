@@ -7,6 +7,10 @@ var mailchimp =require ("@mailchimp/mailchimp_marketing")
 
 var mixpanel = Mixpanel.init('1d67b29ef426e799247c489e8e854a74');
 
+
+var infoApiKey= require('../config/ApiKey'); 
+var infoTest=require ("../config/TestInfo")
+
 let mixpanelEvent = () => {
 
   let userIdMixpanel = "13793"
@@ -32,7 +36,7 @@ mixpanel.track('screen', {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   // Create or update a user in Mixpanel
-  mixpanelEvent()
+//  mixpanelEvent()
 
 /*
 mixpanel.people.set('13793', {
@@ -43,6 +47,10 @@ mixpanel.people.set('13793', {
 });
 
 */
+
+
+console.log(infoApiKey)
+
   res.render('index', { title: 'hello' });
 });
 
@@ -368,69 +376,30 @@ res.json({result});
 
 //recuperation des informations de google place
 router.post('/pointinformation',async function(req, res, next) {
-
-  //Un point WGS84 et une distance en mètres pour le géopositionnement
-  let latitude = req.body.lat
-  let longitude = req.body.lon
-  //let distance = 1000000
+  let lat= req.body.lat
+  let lon = req.body.lon
   let name =req.body.name
-
- // let placeId = "ChIJcc4MrKYM5kcRy6N7Jcg1nC8"
-let placeId = false
+  let placeId = req.dofy.placeId
 
   let responseDetail = undefined
-  let existe = false
  
-  // placeId ='ChIJ4fq5yTmcCUgR0X7sruAW7CE'
-  /*
-  latitude = '48.800065',
-  longitude = '2.53302',
-  name= 'Forme Forest',
-  placeId = 'false'
-  */
-// remplacer espace par %20 + ! accent
+ // Modifiy space and accent in name
+  let nameJoin = name.replace(/ /g, "+");
+  let nameWithoutSpecCarac = encodeURI(nameJoin);
 
-// pas de photo :   "place_id": "ChIJcc4MrKYM5kcRy6N7Jcg1nC8",
-
-
-String.prototype.sansAccent = function(){
-  var accent = [
-      /[\300-\306]/g, /[\340-\346]/g, // A, a
-      /[\310-\313]/g, /[\350-\353]/g, // E, e
-      /[\314-\317]/g, /[\354-\357]/g, // I, i
-      /[\322-\330]/g, /[\362-\370]/g, // O, o
-      /[\331-\334]/g, /[\371-\374]/g, // U, u
-      /[\321]/g, /[\361]/g, // N, n
-      /[\307]/g, /[\347]/g, // C, c
-  ];
-  var noaccent = ['A','a','E','e','I','i','O','o','U','u','N','n','C','c']; 
-  var str = this;
-  for(var i = 0; i < accent.length; i++){
-      str = str.replace(accent[i], noaccent[i]);
-  }
-   
-  return str;
-}
-
-
-let nameModif = name.sansAccent() 
-
-  if(placeId == false || placeId=="false"){
-    var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${nameModif}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${latitude},${longitude}&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+// get information place id
+  if(placeId == false || placeId=="false" || placeId==""){
+    var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${nameWithoutSpecCarac}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${lat},${lon}&key=${infoApiKey.googleApiKey}`)
     var response = JSON.parse(listRaw.getBody())
     placeId = response.candidates[0].place_id
   }
 
-  // Liste des activités hors licence etc ...
-  let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo`)
+  // get info using place id 
+  let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=${infoApiKey.googleApiKey}`)
   let responseDetailRaw = JSON.parse(detailRaw.getBody())
   responseDetail=responseDetailRaw.result
 
-
-// get place details 
-
-
-  res.json({existe,responseDetail});
+  res.json({responseDetail});
 });
 
 
