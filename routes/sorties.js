@@ -7,6 +7,11 @@ const app = express();
 
 var googleTypeModel = require('../models/googleTypeModel')
 
+var infoApiKey= require('../config/ApiKey'); 
+var infoTest=require ("../config/TestInfo")
+
+
+
 router.get('/',  function(req, res, next) {
         let response = "hello from sortie"
 
@@ -86,39 +91,6 @@ nbTypeActivity.filter((item,index)=>{
 //recuperation des informations de google place
 router.post('/mapactivity',async function(req, res, next) {
 
-
-
-    /* Exemple request 
-    api key key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo
-
-    coocrindtaes ! lat,lon
-
-  lat = 48.7927087
-  lon = 2.5133559
-
- 48.7927087,2.5133559
-
-  dist = 10000 in meter
-globaltype :  // request for all specifified type
-type :       //search on one type activity 
-
-
-exempel : 
-
-https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=48.7927087,2.5133559&radius=1500&keyword=bar|restaurant&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo
-
-https://maps.googleapis.com/maps/api/place/nearbysearch/json?pagetoken=CrQCIwEAAD5ScfMhCrgt1MgZH9yIpTF6e7TtGcM8-yUdFBvIhypmooviMogHihsBPNbn3bzl-muNdWVkkr0zH3t62BKoQJEZoMk3qMOVyWHSNVzc2VbDEmlPAl4zyK_FHC_8irG8KoT0YK8awAe-g_uLLPERsJTD5XelX-q9uFPItYx6-X5_VKroKfqf8XaCf-vuDXJ9x8FKqp9RAcvI8gah5h50ygV0Q5C99xOSelCODp2_bVCR41mPjhbAt7qGKdcOYENEsZBgZypcowOsz1m4JH7JgFzDVa-Q4uIu-ba9fa5TyREmMmiefC8JSvKyFrM-JvfWJW7YHcLIF8PhxpLtxjusIfeCd0G-c4_zJXTPBOV23yqWI0NLTtuNaMXkQCMrDNhhifOJjyAlcI6il0NgetLnA-ASEM2vn4kuvJXffyl5SSm79LsaFCeP98JCM0BVmjemL9ZJQXQrLSeW&key=AIzaSyCXI24AWr0Cv2AXnbh29nVA9Ge7SPIvYBo
-
-
-
-    lat = 48.7927087
-    lon = 2.5133559
-    typeactivity="restaurant"
-
-resposne/"status": "ZERO_RESULTS" => aucun resultats 
-
-
-    */
     //Un point WGS84 et une distance en mètres pour le géopositionnement
 
     let lat = req.body.lat
@@ -163,6 +135,37 @@ let mefInformation = response.results.map((item,i)=>{
     res.json({response,arrayResult,nextPage});
   });
   
+//recuperation des informations de google place
+router.post('/pointinformation',async function(req, res, next) {
+    let lat= req.body.lat
+    let lon = req.body.lon
+    let name =req.body.name
+    let placeId = req.body.place_id
+  
+    let responseDetail = undefined
+  
+    console.log(lat,lon,name,placeId)
 
+   // Modifiy space and accent in name
+    let nameJoin = name.replace(/ /g, "+");
+    let nameWithoutSpecCarac = encodeURI(nameJoin);
+  
+  // get information place id
+    if(placeId == false || placeId=="false" || placeId==""){
+        console.log('pas de place id')
+      var listRaw = request('GET', `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${nameWithoutSpecCarac}&inputtype=textquery&fields=photos,formatted_address,name,rating,opening_hours,geometry,place_id,icon&locationbias=point:${lat},${lon}&key=${infoApiKey.googleApiKey}`)
+      var response = JSON.parse(listRaw.getBody())
+      placeId = response.candidates[0].place_id
+    }
+  
+    // get info using place id 
+    let detailRaw = request('GET', `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&language=fr&fields=address_component,adr_address,business_status,formatted_address,geometry,icon,name,photo,place_id,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,review,user_ratings_total&key=${infoApiKey.googleApiKey}`)
+    let responseDetailRaw = JSON.parse(detailRaw.getBody())
+    responseDetail=responseDetailRaw.result
+    
+    console.log(responseDetail)
+    res.json({responseDetail});
+  });
+  
 
   module.exports = router;

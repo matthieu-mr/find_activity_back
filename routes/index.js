@@ -379,7 +379,7 @@ router.post('/pointinformation',async function(req, res, next) {
   let lat= req.body.lat
   let lon = req.body.lon
   let name =req.body.name
-  let placeId = req.dofy.placeId
+  let placeId = req.body.placeId
 
   let responseDetail = undefined
  

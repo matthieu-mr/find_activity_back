@@ -353,8 +353,8 @@ res.json( {user} );
 router.post('/sendmailnewpassword', async function(req, res, next) {
   let result =true 
 
-  var pseudo = "aa"
-  var email = "m.michon@yahoo.fr"
+  var pseudo = req.body.pseudo
+  var email = req.body.email
 
   var user = await UserModel.findOne({$or: [{'email': email}, {'pseudo': pseudo}] });
 
@@ -362,48 +362,48 @@ router.post('/sendmailnewpassword', async function(req, res, next) {
   let emailUser = user.email
   let url =`http://localhost:3001/newpassword${idUser}`
 
-  let transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-  // should be replaced with real sender's account
-  user: 'm.michon.rossel@gmail.com',
-  pass: 'hbmxoxyvcrunsrxb'
-  },
-  tls: { 
-  // do not fail on invalid certs 
-  rejectUnauthorized: false 
-  } 
-  });
-  let mailOptions = {
-  // should be replaced with real recipient's account
-  from: '"Quoi Faire" <m.michon.rossel@gmail.com>',
-  to: email,
-  subject: "Quoi Faire - Réinitialisation de votre mot de passe ",
-  text:  `<b>Bonjour <strong>${user.pseudo} </strong> ! </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
-  Pour réinitialiser ce dernier, suivez ce lien : <br/> 
-  <a href="${url}" target="_blank" >Changer mon mot de passe</a>` ,
-  html: `<b>Bonjour <strong>${user.pseudo}</strong> </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
-  Pour le réinitialiser, il vous suffit juste de suivre ce lien : <br/> <br/>
-  <a href="${url}" target="_blank" >Changer mon mot de passe</a>
-  <br/><br/> <br/>
-  Cordialement,<br/>
-  L'équipe de Quoi faire` // html body
-  };
-  transporter.sendMail(mailOptions, (error, info) => {
-  console.log(info,error)
-  if (error) {
-  result = false
-  return console.log("erreure transporter",error);
-  }
-  result = true
-  console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+    let transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      // should be replaced with real sender's account
+      user: 'm.michon.rossel@gmail.com',
+      pass: 'hbmxoxyvcrunsrxb'
+    },
+    tls: { 
+      // do not fail on invalid certs 
+      rejectUnauthorized: false 
+    } 
+    });
+    let mailOptions = {
+      // should be replaced with real recipient's account
+      from: '"Quoi Faire" <m.michon.rossel@gmail.com>',
+      to: emailUser,
+      subject: "Quoi Faire - Réinitialisation de votre mot de passe ",
+      text:  `<b>Bonjour <strong>${user.pseudo} </strong> ! </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
+      Pour réinitialiser ce dernier, suivez ce lien : <br/> 
+      <a href="${url}" target="_blank" >Changer mon mot de passe</a>` ,
+      html: `<b>Bonjour <strong>${user.pseudo}</strong> </b><br/> <p>	Vous avez oublié votre mot de passe ? <br/> Pas d’inquiétude ! Cela arrive à tout le monde. </p>
+      Pour le réinitialiser, il vous suffit juste de suivre ce lien : <br/> <br/>
+      <a href="${url}" target="_blank" >Changer mon mot de passe</a>
+      <br/><br/> <br/>
+      Cordialement,<br/>
+      L'équipe de Quoi faire` // html body
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+    console.log(info,error)
+    if (error) {
+    result = false
+    return console.log("erreure transporter",error);
+    }
+    result = true
+    console.log("Message sent: %s", info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
-  // Preview only available when sending through an Ethereal account
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  });
+    // Preview only available when sending through an Ethereal account
+    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+    });
 
 res.json( {result} );
 });
