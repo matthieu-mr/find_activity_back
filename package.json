@@ -11,7 +11,7 @@
     "crypto-js": "^4.0.0",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
-    "express": "~4.16.1",
+    "express": "~4.17.3",
     "http-errors": "~1.6.3",
     "mailchimp-api-v3": "^1.14.0",
     "materialize-css": "^1.0.0",
